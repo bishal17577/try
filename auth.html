@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Login - Simha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            color: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-container {
+            max-width: 400px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e0e0e0;
+            padding: 40px 32px;
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .auth-header .logo { font-size: 56px; display: block; margin-bottom: 4px; }
+        .auth-header h1 { font-size: 28px; font-weight: 800; }
+        .auth-header p { color: #888; font-size: 14px; }
+        .btn-google {
+            width: 100%;
+            padding: 14px;
+            background: #ffffff;
+            color: #000;
+            border: 1.5px solid #d0d0d0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-google:hover { border-color: #000; background: #f5f5f5; }
+        .btn-google:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-google .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e0e0e0;
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        .btn-google.loading .btn-text { display: none; }
+        .btn-google.loading .spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 20px 0;
+            color: #999;
+            font-size: 13px;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .status-message.show { display: block; }
+        .status-message.success { background: #f0f0f0; color: #000; border: 1px solid #d0d0d0; }
+        .status-message.error { background: #fef0f0; color: #cc0000; border: 1px solid #ffd0d0; }
+        .user-info {
+            text-align: center;
+            padding: 20px 0;
+            display: none;
+        }
+        .user-info .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #000;
+            margin: 0 auto 12px;
+            display: block;
+        }
+        .user-info .name { font-size: 18px; font-weight: 600; }
+        .user-info .email { font-size: 14px; color: #888; }
+        .user-info .role-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+            background: #f0f0f0;
+            border: 1px solid #d0d0d0;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+            margin-top: 4px;
+        }
+        .btn-primary:hover { opacity: 0.8; }
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            color: #000;
+            border: 1.5px solid #d0d0d0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            margin-top: 10px;
+        }
+        .btn-secondary:hover { border-color: #000; background: #f5f5f5; }
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+        }
+        .toast {
+            background: #000;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            pointer-events: auto;
+            animation: slideUp 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .toast.success { background: #000; }
+        .toast.error { background: #cc0000; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-color-scheme: dark) {
+            body { background: #0a0a0a; }
+            .auth-container { background: #1a1a1a; border-color: #2a2a2a; }
+            .auth-header h1 { color: #fff; }
+            .auth-header p { color: #888; }
+            .btn-google { background: #1a1a1a; color: #fff; border-color: #3a3a3a; }
+            .btn-google:hover { background: #2a2a2a; border-color: #fff; }
+            .btn-google .spinner { border-color: #3a3a3a; border-top-color: #fff; }
+            .divider { color: #666; }
+            .divider::before, .divider::after { background: #2a2a2a; }
+            .status-message.success { background: #2a2a2a; color: #fff; border-color: #3a3a3a; }
+            .status-message.error { background: #2a1a1a; color: #ff6666; border-color: #3a2a2a; }
+            .user-info .name { color: #fff; }
+            .user-info .email { color: #888; }
+            .user-info .role-badge { background: #2a2a2a; color: #fff; border-color: #3a3a3a; }
+            .btn-primary { background: #fff; color: #000; }
+            .btn-secondary { color: #fff; border-color: #3a3a3a; }
+            .btn-secondary:hover { border-color: #fff; background: #2a2a2a; }
+            .toast { background: #2a2a2a; border-color: #3a3a3a; }
+        }
+        @media (max-width: 480px) {
+            .auth-container { padding: 24px 16px; border: none; }
+            .auth-header .logo { font-size: 48px; }
+            .auth-header h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-header">
+        <span class="logo">🦁</span>
+        <h1>Simha</h1>
+        <p>All Shops, One Place</p>
+    </div>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <!-- ===== LOGIN SECTION ===== -->
+    <div id="loginSection">
+        <button class="btn-google" id="googleBtn" onclick="handleGoogleLogin()">
+            <svg width="22" height="22" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            <span class="btn-text">Continue with Google</span>
+            <span class="spinner"></span>
+        </button>
+    </div>
+
+    <!-- ===== USER INFO ===== -->
+    <div id="userSection" class="user-info">
+        <img id="userAvatar" class="avatar" src="" alt="Profile">
+        <div class="name" id="userName">User</div>
+        <div class="email" id="userEmail">user@email.com</div>
+        <div class="role-badge" id="userRole">Customer</div>
+        <div style="margin-top:16px;">
+            <button class="btn-primary" onclick="goToDashboard()">Go to Dashboard</button>
+            <button class="btn-secondary" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================ -->
+<!-- ===== FIREBASE + ALL JAVASCRIPT (INTERNAL) ===== -->
+<!-- ============================================================ -->
+<script type="importmap">
+{
+    "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+        "firebase/messaging": "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js"
+    }
+}
+</script>
+
+<script type="module">
+    // ============================================================
+    // FIREBASE IMPORTS
+    // ============================================================
+    import { initializeApp } from 'firebase/app';
+    import { 
+        getAuth, 
+        signInWithPopup, 
+        GoogleAuthProvider,
+        onAuthStateChanged,
+        signOut,
+        setPersistence,
+        browserLocalPersistence
+    } from 'firebase/auth';
+    import {
+        getFirestore,
+        doc,
+        setDoc,
+        getDoc,
+        serverTimestamp,
+        updateDoc
+    } from 'firebase/firestore';
+    import {
+        getMessaging,
+        getToken,
+        onMessage,
+        deleteToken
+    } from 'firebase/messaging';
+
+    // ============================================================
+    // FIREBASE CONFIG
+    // ============================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJLnUB8XnXWPEtSRAMuQr9ASmD16HLIJc",
+        authDomain: "bishalshrestha17-de676.firebaseapp.com",
+        projectId: "bishalshrestha17-de676",
+        storageBucket: "bishalshrestha17-de676.firebasestorage.app",
+        messagingSenderId: "631628771230",
+        appId: "1:631628771230:web:389c6430535f6a46b6708f"
+    };
+
+    const VAPID_KEY = 'BLhIQ1VHm1tEuvB3pO2Vq5nzrC3YkDqFp5WcRvNxYzA9b8c7d6e5f4g3h2i1j0k9l8m7n6o5p4q3r2s1t0u9v8w7x6y5z4';
+
+    // ============================================================
+    // INITIALIZE
+    // ============================================================
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    setPersistence(auth, browserLocalPersistence)
+        .then(() => console.log('✅ Auth persistence set'))
+        .catch(err => console.warn('⚠️ Persistence error:', err));
+
+    // ============================================================
+    // MESSAGING (Only works on HTTPS)
+    // ============================================================
+    let messaging = null;
+    try {
+        if (window.location.protocol === 'https:') {
+            messaging = getMessaging(app);
+            console.log('✅ Messaging initialized');
+        }
+    } catch (err) {
+        console.log('ℹ️ Messaging requires HTTPS');
+    }
+
+    // ============================================================
+    // DOM REFS
+    // ============================================================
+    const googleBtn = document.getElementById('googleBtn');
+    const statusMsg = document.getElementById('statusMessage');
+    const loginSection = document.getElementById('loginSection');
+    const userSection = document.getElementById('userSection');
+    const userAvatar = document.getElementById('userAvatar');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    const userRole = document.getElementById('userRole');
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            toast.style.transition = 'all 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // FCM FUNCTIONS (INTERNAL)
+    // ============================================================
+    async function requestNotificationPermission() {
+        if (!messaging) {
+            console.warn('⚠️ Messaging not available');
+            return null;
+        }
+
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                console.log('✅ Notification permission granted');
+                
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                    console.log('✅ Service Worker registered');
+                }
+                
+                const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+                console.log('✅ FCM Token:', token);
+                
+                if (auth.currentUser) {
+                    await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+                        fcmToken: token,
+                        fcmTokenUpdated: serverTimestamp()
+                    });
+                    console.log('✅ FCM Token saved');
+                }
+                
+                return token;
+            } else {
+                console.warn('⚠️ Notification permission denied');
+                return null;
+            }
+        } catch (error) {
+            console.error('❌ Error requesting permission:', error);
+            return null;
+        }
+    }
+
+    function setupMessageListener() {
+        if (!messaging) return () => {};
+        try {
+            const unsubscribe = onMessage(messaging, (payload) => {
+                console.log('📨 Foreground message:', payload);
+                const title = payload.notification?.title || 'New Notification';
+                const body = payload.notification?.body || '';
+                const link = payload.data?.link || '/notifications.html';
+                
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed; top: 80px; right: 16px;
+                    background: #000; color: white;
+                    padding: 16px 20px; border-radius: 12px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+                    z-index: 1000; max-width: 350px;
+                    cursor: pointer; font-family: 'Inter', sans-serif;
+                    animation: slideIn 0.3s ease;
+                `;
+                toast.innerHTML = `<strong>${title}</strong><p style="margin:4px 0 0;font-size:13px;opacity:0.9;">${body}</p>`;
+                toast.onclick = () => window.location.href = link;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(20px)'; setTimeout(() => toast.remove(), 300); }, 5000);
+            });
+            console.log('✅ Message listener setup');
+            return unsubscribe;
+        } catch (error) {
+            console.error('❌ Message listener error:', error);
+            return () => {};
+        }
+    }
+
+    // ============================================================
+    // GOOGLE LOGIN
+    // ============================================================
+    window.handleGoogleLogin = async function() {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        
+        googleBtn.classList.add('loading');
+        googleBtn.disabled = true;
+        
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            console.log('✅ Google login:', user.uid);
+            
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            
+            if (!userDoc.exists()) {
+                await setDoc(doc(db, 'users', user.uid), {
+                    uid: user.uid,
+                    name: user.displayName || 'User',
+                    email: user.email,
+                    phone: user.phoneNumber || '',
+                    role: 'customer',
+                    profilePhotoURL: user.photoURL || '',
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                    emailVerified: true,
+                    favorites: [],
+                    readNotifications: []
+                });
+                console.log('✅ New user created');
+                showToast('Account created! ✅', 'success');
+            } else {
+                console.log('✅ Existing user');
+                showToast('Welcome back! 👋', 'success');
+            }
+            
+            // 🔔 REQUEST NOTIFICATIONS AFTER LOGIN
+            setTimeout(async () => {
+                await requestNotificationPermission();
+                setupMessageListener();
+            }, 2000);
+            
+            showUserInfo(user);
+            
+        } catch (error) {
+            console.error('❌ Login error:', error);
+            let msg = 'Login failed. Please try again.';
+            if (error.code === 'auth/popup-closed-by-user') msg = 'Login cancelled.';
+            else if (error.code === 'auth/popup-blocked') msg = 'Popup blocked. Allow popups.';
+            else if (error.code === 'auth/network-request-failed') msg = 'Network error. Check your connection.';
+            showToast('❌ ' + msg, 'error');
+        } finally {
+            googleBtn.classList.remove('loading');
+            googleBtn.disabled = false;
+        }
+    };
+
+    // ============================================================
+    // SHOW USER INFO
+    // ============================================================
+    function showUserInfo(user) {
+        loginSection.style.display = 'none';
+        userSection.style.display = 'block';
+        
+        userAvatar.src = user.photoURL || '';
+        userAvatar.alt = user.displayName || 'User';
+        userName.textContent = user.displayName || 'User';
+        userEmail.textContent = user.email || '';
+        
+        getDoc(doc(db, 'users', user.uid))
+            .then(doc => {
+                if (doc.exists()) {
+                    userRole.textContent = '🛡️ ' + (doc.data().role || 'Customer');
+                }
+            })
+            .catch(err => console.warn('Role fetch error:', err));
+    }
+
+    // ============================================================
+    // GO TO DASHBOARD
+    // ============================================================
+    window.goToDashboard = function() {
+        const user = auth.currentUser;
+        if (!user) return;
+        getDoc(doc(db, 'users', user.uid))
+            .then(doc => {
+                if (doc.exists()) {
+                    const role = doc.data().role || 'customer';
+                    if (role === 'admin') window.location.href = 'admin.html';
+                    else if (role === 'shop') window.location.href = 'shop-dashboard.html';
+                    else window.location.href = 'index.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            })
+            .catch(() => window.location.href = 'index.html');
+    };
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    window.handleLogout = async function() {
+        try {
+            // Remove FCM token
+            if (messaging && auth.currentUser) {
+                try {
+                    await deleteToken(messaging);
+                    await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+                        fcmToken: null,
+                        fcmTokenUpdated: serverTimestamp()
+                    });
+                } catch (e) { console.log('FCM cleanup skipped'); }
+            }
+            await signOut(auth);
+            showToast('Logged out 👋', 'info');
+            loginSection.style.display = 'block';
+            userSection.style.display = 'none';
+        } catch (error) {
+            console.error('Logout error:', error);
+            showToast('Logout failed', 'error');
+        }
+    };
+
+    // ============================================================
+    // AUTH STATE
+    // ============================================================
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log('✅ Logged in:', user.uid);
+            showUserInfo(user);
+        } else {
+            console.log('👤 No user');
+            loginSection.style.display = 'block';
+            userSection.style.display = 'none';
+        }
+    });
+
+    // ============================================================
+    // GLOBAL
+    // ============================================================
+    window.handleGoogleLogin = window.handleGoogleLogin;
+    window.goToDashboard = window.goToDashboard;
+    window.handleLogout = window.handleLogout;
+    window.showToast = showToast;
+
+    console.log('🚀 Auth + FCM ready');
+    console.log('📧 Project:', firebaseConfig.projectId);
+</script>
+</body>
+</html>

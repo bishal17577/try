@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <meta name="theme-color" content="#ffffff">
+    <title>Admin Panel - Simha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            color: #000000;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+            font-size: inherit;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 2px solid #000;
+            padding: 0 16px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .navbar .logo span {
+            font-size: 24px;
+        }
+        .navbar .logo .badge {
+            font-size: 10px;
+            background: #000;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+        .navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar .nav-actions .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .navbar .nav-actions .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            object-fit: cover;
+        }
+        .navbar .nav-actions .profile-avatar:hover {
+            border-color: #000;
+        }
+        .navbar .nav-actions .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding: 12px 0;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 16px;
+        }
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .admin-tab {
+            flex-shrink: 0;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-tab:hover {
+            color: #000;
+            border-color: #e0e0e0;
+        }
+        .admin-tab.active {
+            color: #fff;
+            background: #000;
+            border-color: #000;
+        }
+        .admin-tab .icon {
+            margin-right: 4px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 800;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #000;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #000;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-group .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        .form-group .file-input-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .form-group .file-input-wrapper .file-label {
+            display: block;
+            padding: 10px 14px;
+            border: 1px dashed #d0d0d0;
+            border-radius: 8px;
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .form-group .file-input-wrapper .file-label:hover {
+            border-color: #000;
+        }
+        .form-group .file-preview {
+            margin-top: 8px;
+            max-height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+        .form-group .file-preview.show {
+            display: block;
+        }
+        .form-group .file-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.8;
+        }
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-danger {
+            padding: 6px 14px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-danger:hover {
+            opacity: 0.8;
+        }
+        .btn-secondary {
+            padding: 6px 14px;
+            background: transparent;
+            color: #000;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-secondary:hover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+        .btn-warning {
+            padding: 6px 14px;
+            background: #f59e0b;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-warning:hover {
+            opacity: 0.8;
+        }
+
+        .table-container {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            overflow: auto;
+            padding: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+        table tr:last-child td {
+            border-bottom: none;
+        }
+        table .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        table .banner-img {
+            width: 80px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        table .product-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        table .shop-logo-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+        }
+        .toast {
+            background: #000;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            pointer-events: auto;
+            animation: slideUp 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .toast.success { background: #000; }
+        .toast.error { background: #cc0000; }
+        .toast.warning { background: #cc8800; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+        .empty-state .emoji {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .empty-state h3 {
+            color: #000;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+        }
+        .modal-box .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .modal-box .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .modal-box .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            color: #888;
+        }
+        .modal-box .modal-close:hover {
+            color: #000;
+        }
+
+        /* Banner preview card */
+        .banner-preview-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .banner-preview-card .preview-img {
+            width: 120px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        .banner-preview-card .info {
+            flex: 1;
+        }
+        .banner-preview-card .info .title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .banner-preview-card .info .subtitle {
+            font-size: 12px;
+            color: #888;
+        }
+        .banner-preview-card .info .link {
+            font-size: 11px;
+            color: #666;
+            word-break: break-all;
+        }
+
+        .search-box {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            min-width: 200px;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .admin-tabs {
+                gap: 6px;
+            }
+            .admin-tab {
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+            .banner-preview-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .banner-preview-card .preview-img {
+                width: 100%;
+                height: 100px;
+            }
+            .search-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span>🦁</span>
+            Simha
+            <span class="badge">ADMIN</span>
+        </div>
+        <div class="nav-actions">
+            <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+            <div class="profile-avatar" id="profileAvatar" onclick="window.location.href='profile.html'">👤</div>
+        </div>
+    </nav>
+
+    <main class="container" style="max-width:1200px;margin:0 auto;padding:0 16px;">
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                <span class="icon">📊</span> Dashboard
+            </button>
+            <button class="admin-tab" data-tab="create-shop" onclick="switchTab('create-shop')">
+                <span class="icon">🏪</span> Create Shop
+            </button>
+            <button class="admin-tab" data-tab="shops" onclick="switchTab('shops')">
+                <span class="icon">📋</span> All Shops
+            </button>
+            <button class="admin-tab" data-tab="products" onclick="switchTab('products')">
+                <span class="icon">📦</span> Products
+            </button>
+            <button class="admin-tab" data-tab="add-product" onclick="switchTab('add-product')">
+                <span class="icon">➕</span> Add Product
+            </button>
+            <button class="admin-tab" data-tab="users" onclick="switchTab('users')">
+                <span class="icon">👥</span> Users
+            </button>
+            <button class="admin-tab" data-tab="banners" onclick="switchTab('banners')">
+                <span class="icon">🖼️</span> Banners
+            </button>
+            <button class="admin-tab" data-tab="notifications" onclick="switchTab('notifications')">
+                <span class="icon">📨</span> Notifications
+            </button>
+            <button class="admin-tab" data-tab="settings" onclick="switchTab('settings')">
+                <span class="icon">⚙️</span> Settings
+            </button>
+        </div>
+
+        <!-- ===== DASHBOARD ===== -->
+        <div class="tab-content active" id="tabDashboard">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="number" id="statShops">0</div><div class="label">Total Shops</div></div>
+                <div class="stat-card"><div class="number" id="statProducts">0</div><div class="label">Total Products</div></div>
+                <div class="stat-card"><div class="number" id="statUsers">0</div><div class="label">Total Users</div></div>
+                <div class="stat-card"><div class="number" id="statOrders">0</div><div class="label">Total Orders</div></div>
+                <div class="stat-card"><div class="number" id="statBanners">0</div><div class="label">Total Banners</div></div>
+            </div>
+            <div style="background:#fff;border-radius:12px;border:1px solid #e0e0e0;padding:20px;text-align:center;">
+                <h3 style="margin-bottom:8px;">Welcome to Admin Panel</h3>
+                <p style="color:#888;font-size:14px;">Manage everything from here. No limits on shops or products.</p>
+            </div>
+        </div>
+
+        <!-- ===== CREATE SHOP ===== -->
+        <div class="tab-content" id="tabCreateShop">
+            <h2 style="margin-bottom:16px;">Create New Shop</h2>
+            <form id="createShopForm" style="max-width:600px;">
+                <div class="form-group"><label>Shop Name *</label><input type="text" id="shopName" placeholder="e.g. Fresh Mart Dhading" required></div>
+                <div class="form-group"><label>Owner Name *</label><input type="text" id="ownerName" placeholder="e.g. Ram Sharma" required></div>
+                <div class="form-group"><label>Owner Email *</label><input type="email" id="ownerEmail" placeholder="owner@email.com" required></div>
+                <div class="form-group"><label>Contact Number *</label><input type="tel" id="shopPhone" placeholder="9841234567" required></div>
+                <div class="form-group"><label>WhatsApp Number</label><input type="tel" id="shopWhatsapp" placeholder="9841234567"></div>
+                <div class="form-group"><label>PAN Number</label><input type="text" id="shopPan" placeholder="123456789"></div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="shopCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="Grocery Stores">🛒 Grocery Stores</option>
+                        <option value="Mobile Shops">📱 Mobile Shops</option>
+                        <option value="Clothing Stores">👕 Clothing Stores</option>
+                        <option value="Electronics Shops">💻 Electronics Shops</option>
+                        <option value="Restaurants & Food">🍽️ Restaurants & Food</option>
+                        <option value="Hardware Stores">🔧 Hardware Stores</option>
+                        <option value="Pharmacy">💊 Pharmacy</option>
+                        <option value="Agriculture Stores">🌱 Agriculture Stores</option>
+                        <option value="Beauty & Saloon">💄 Beauty & Saloon</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>District *</label>
+                    <select id="shopDistrict" required>
+                        <option value="">Select District</option>
+                        <option value="Kathmandu">Kathmandu</option>
+                        <option value="Lalitpur">Lalitpur</option>
+                        <option value="Bhaktapur">Bhaktapur</option>
+                        <option value="Dhading">Dhading</option>
+                        <option value="Chitwan">Chitwan</option>
+                        <option value="Pokhara">Pokhara</option>
+                        <option value="Butwal">Butwal</option>
+                        <option value="Biratnagar">Biratnagar</option>
+                        <option value="Birgunj">Birgunj</option>
+                        <option value="Nepalgunj">Nepalgunj</option>
+                        <option value="Dhangadhi">Dhangadhi</option>
+                        <option value="Ilam">Ilam</option>
+                        <option value="Jhapa">Jhapa</option>
+                        <option value="Morang">Morang</option>
+                        <option value="Sunsari">Sunsari</option>
+                        <option value="Kaski">Kaski</option>
+                        <option value="Tanahu">Tanahu</option>
+                        <option value="Syangja">Syangja</option>
+                        <option value="Gorkha">Gorkha</option>
+                        <option value="Nuwakot">Nuwakot</option>
+                        <option value="Rasuwa">Rasuwa</option>
+                        <option value="Sindhupalchok">Sindhupalchok</option>
+                        <option value="Kavrepalanchok">Kavrepalanchok</option>
+                        <option value="Dolakha">Dolakha</option>
+                        <option value="Ramechhap">Ramechhap</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Address / Tole *</label><input type="text" id="shopAddress" placeholder="e.g. Dhading Besi" required></div>
+                <div class="form-group"><label>Shop Description</label><textarea id="shopDescription" placeholder="Describe your shop..."></textarea></div>
+                <div class="form-group"><label>Delivery Time</label><input type="text" id="shopDelivery" placeholder="e.g. 1-2 days"></div>
+                <div class="form-group"><label>Opening Time</label><input type="text" id="shopOpenTime" placeholder="e.g. 9:00 AM"></div>
+                <div class="form-group"><label>Closing Time</label><input type="text" id="shopCloseTime" placeholder="e.g. 9:00 PM"></div>
+                <div class="form-group">
+                    <label>Shop Cover Photo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="shopPhoto" accept="image/*" onchange="previewImage(this, 'shopPhotoPreview')">
+                        <div class="file-label">📸 Click to upload cover photo</div>
+                    </div>
+                    <div class="file-preview" id="shopPhotoPreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group">
+                    <label>Shop Logo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="shopLogo" accept="image/*" onchange="previewImage(this, 'shopLogoPreview')">
+                        <div class="file-label">🖼️ Click to upload logo</div>
+                    </div>
+                    <div class="file-preview" id="shopLogoPreview"><img src="" alt="Preview"></div>
+                </div>
+                <button type="submit" class="btn-primary" id="createShopBtn">🏪 Create Shop</button>
+            </form>
+        </div>
+
+        <!-- ===== ALL SHOPS (WITH EDIT) ===== -->
+        <div class="tab-content" id="tabShops">
+            <h2 style="margin-bottom:12px;">All Shops</h2>
+            <div class="search-box">
+                <input type="text" id="shopSearchInput" placeholder="🔍 Search shops by name, ID, category..." onkeyup="filterShops(this.value)">
+            </div>
+            <div class="table-container" id="shopsTableContainer">
+                <div class="empty-state"><span class="emoji">🏪</span><h3>No shops yet</h3><p>Create your first shop.</p></div>
+            </div>
+        </div>
+
+        <!-- ===== PRODUCTS (WITH EDIT) ===== -->
+        <div class="tab-content" id="tabProducts">
+            <h2 style="margin-bottom:12px;">All Products</h2>
+            <div class="search-box">
+                <input type="text" id="productSearchInput" placeholder="🔍 Search products by name, shop..." onkeyup="filterProducts(this.value)">
+            </div>
+            <div class="table-container" id="productsTableContainer">
+                <div class="empty-state"><span class="emoji">📦</span><h3>No products yet</h3><p>Add products.</p></div>
+            </div>
+        </div>
+
+        <!-- ===== ADD PRODUCT ===== -->
+        <div class="tab-content" id="tabAddProduct">
+            <h2 style="margin-bottom:16px;">Add New Product</h2>
+            <form id="addProductForm" style="max-width:600px;">
+                <div class="form-group"><label>Product Name *</label><input type="text" id="prodName" placeholder="e.g. Jeera Masino Rice" required></div>
+                <div class="form-group"><label>Description</label><textarea id="prodDescription" placeholder="Describe your product..."></textarea></div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="prodCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="Grocery">🛒 Grocery</option>
+                        <option value="Mobile">📱 Mobile</option>
+                        <option value="Fashion">👕 Fashion</option>
+                        <option value="Electronics">💻 Electronics</option>
+                        <option value="Food">🍽️ Food</option>
+                        <option value="Hardware">🔧 Hardware</option>
+                        <option value="Pharmacy">💊 Pharmacy</option>
+                        <option value="Agriculture">🌱 Agriculture</option>
+                        <option value="Beauty">💄 Beauty</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Price (Rs.) *</label><input type="number" id="prodPrice" placeholder="650" required min="0"></div>
+                <div class="form-group"><label>Unit</label><input type="text" id="prodUnit" placeholder="e.g. 5kg, 2L, per piece"></div>
+                <div class="form-group"><label>Stock Quantity *</label><input type="number" id="prodStock" placeholder="50" required min="0"></div>
+                <div class="form-group"><label>Discount Price</label><input type="number" id="prodDiscountPrice" placeholder="500" min="0"></div>
+                <div class="form-group"><label>Discount %</label><input type="number" id="prodDiscountPercent" placeholder="20" min="0" max="100"></div>
+                <div class="form-group">
+                    <label>On Sale</label>
+                    <select id="prodOnSale"><option value="false">No</option><option value="true">Yes</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Shop *</label>
+                    <select id="prodShopId" required><option value="">Select Shop</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Product Image</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="prodImage" accept="image/*" onchange="previewImage(this, 'prodImagePreview')">
+                        <div class="file-label">📸 Click to upload product image</div>
+                    </div>
+                    <div class="file-preview" id="prodImagePreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group"><label><input type="checkbox" id="prodActive" checked> Active</label></div>
+                <button type="submit" class="btn-primary" id="addProductBtn">➕ Add Product</button>
+            </form>
+        </div>
+
+        <!-- ===== USERS ===== -->
+        <div class="tab-content" id="tabUsers">
+            <h2 style="margin-bottom:12px;">All Users</h2>
+            <div class="search-box">
+                <input type="text" id="userSearchInput" placeholder="🔍 Search users by name, email..." onkeyup="filterUsers(this.value)">
+            </div>
+            <div class="table-container" id="usersTableContainer">
+                <div class="empty-state"><span class="emoji">👥</span><h3>No users yet</h3><p>Users will appear here.</p></div>
+            </div>
+        </div>
+
+        <!-- ===== BANNERS ===== -->
+        <div class="tab-content" id="tabBanners">
+            <h2 style="margin-bottom:16px;">🖼️ Advertisement Banners</h2>
+            
+            <form id="addBannerForm" style="max-width:600px;background:#f8f8f8;padding:20px;border-radius:12px;margin-bottom:20px;border:1px solid #e0e0e0;">
+                <h3 style="margin-bottom:12px;font-size:16px;">Add New Banner</h3>
+                <div class="form-group">
+                    <label>Banner Image *</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="bannerImage" accept="image/*" onchange="previewImage(this, 'bannerImagePreview')">
+                        <div class="file-label">📸 Click to upload banner image</div>
+                    </div>
+                    <div class="file-preview" id="bannerImagePreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group"><label>Title</label><input type="text" id="bannerTitle" placeholder="e.g. Summer Sale!"></div>
+                <div class="form-group"><label>Subtitle</label><input type="text" id="bannerSubtitle" placeholder="e.g. Up to 50% off"></div>
+                <div class="form-group"><label>Link URL</label><input type="url" id="bannerLink" placeholder="https://simha.com/shop-listing.html"></div>
+                <div class="form-group"><label>Display Order</label><input type="number" id="bannerOrder" placeholder="1" value="1"></div>
+                <div class="form-group"><label><input type="checkbox" id="bannerActive" checked> Active</label></div>
+                <button type="submit" class="btn-primary" id="addBannerBtn">➕ Add Banner</button>
+            </form>
+
+            <h3 style="margin-bottom:12px;">Current Banners</h3>
+            <div id="bannersListContainer"></div>
+        </div>
+
+        <!-- ===== NOTIFICATIONS ===== -->
+        <div class="tab-content" id="tabNotifications">
+            <h2 style="margin-bottom:12px;">Send Notification</h2>
+            <form id="notifForm" style="max-width:600px;">
+                <div class="form-group"><label>Notification Title *</label><input type="text" id="notifTitle" placeholder="e.g. 🎉 New Shop Added!" required></div>
+                <div class="form-group"><label>Message *</label><textarea id="notifBody" placeholder="Write your notification message..." required></textarea></div>
+                <div class="form-group">
+                    <label>Target Audience</label>
+                    <select id="notifTarget">
+                        <option value="all">All Users</option>
+                        <option value="customer">Customers Only</option>
+                        <option value="shop">Shop Owners Only</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Image URL</label><input type="url" id="notifImage" placeholder="https://i.ibb.co/xxx.jpg"></div>
+                <div class="form-group"><label>Deep Link</label><input type="text" id="notifLink" placeholder="/shop-detail.html?shopId=SIM001"></div>
+                <button type="submit" class="btn-primary" id="sendNotifBtn">📨 Send Notification</button>
+            </form>
+            <div style="margin-top:20px;">
+                <h3 style="margin-bottom:8px;">📧 Send Email to All Users</h3>
+                <form id="emailForm" style="max-width:600px;">
+                    <div class="form-group"><label>Subject *</label><input type="text" id="emailSubject" placeholder="Subject" required></div>
+                    <div class="form-group"><label>Body *</label><textarea id="emailBody" placeholder="Write your email..." required style="min-height:120px;"></textarea></div>
+                    <div class="form-group">
+                        <label>Target Audience</label>
+                        <select id="emailTarget">
+                            <option value="all">All Users</option>
+                            <option value="customer">Customers Only</option>
+                            <option value="shop">Shop Owners Only</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary" id="sendEmailBtn">📧 Send Email</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== SETTINGS ===== -->
+        <div class="tab-content" id="tabSettings">
+            <h2 style="margin-bottom:16px;">⚙️ Site Settings</h2>
+            <form id="settingsForm" style="max-width:600px;">
+                <div class="form-group">
+                    <label>Site Logo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="siteLogoUpload" accept="image/*" onchange="previewImage(this, 'siteLogoPreview')">
+                        <div class="file-label">🖼️ Upload Logo</div>
+                    </div>
+                    <div class="file-preview" id="siteLogoPreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group"><label>Site Name</label><input type="text" id="siteName" placeholder="Simha"></div>
+                <div class="form-group">
+                    <label>Advertisement Image (600×160 px)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="adImageUpload" accept="image/*" onchange="previewImage(this, 'adImagePreview')">
+                        <div class="file-label">📢 Upload Ad Image</div>
+                    </div>
+                    <div class="file-preview" id="adImagePreview"><img src="" alt="Preview"></div>
+                </div>
+                <button type="submit" class="btn-primary">💾 Save Settings</button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- ===== EDIT SHOP MODAL ===== -->
+    <div class="modal-overlay" id="editShopModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Edit Shop</h2>
+                <span class="modal-close" onclick="closeShopModal()">✕</span>
+            </div>
+            <form id="editShopForm">
+                <input type="hidden" id="editShopId">
+                <div class="form-group"><label>Shop Name *</label><input type="text" id="editShopName" required></div>
+                <div class="form-group"><label>Owner Name *</label><input type="text" id="editShopOwner" required></div>
+                <div class="form-group"><label>Email *</label><input type="email" id="editShopEmail" required></div>
+                <div class="form-group"><label>Phone *</label><input type="tel" id="editShopPhone" required></div>
+                <div class="form-group"><label>WhatsApp</label><input type="tel" id="editShopWhatsapp"></div>
+                <div class="form-group"><label>PAN</label><input type="text" id="editShopPan"></div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="editShopCategory" required>
+                        <option value="Grocery Stores">🛒 Grocery Stores</option>
+                        <option value="Mobile Shops">📱 Mobile Shops</option>
+                        <option value="Clothing Stores">👕 Clothing Stores</option>
+                        <option value="Electronics Shops">💻 Electronics Shops</option>
+                        <option value="Restaurants & Food">🍽️ Restaurants & Food</option>
+                        <option value="Hardware Stores">🔧 Hardware Stores</option>
+                        <option value="Pharmacy">💊 Pharmacy</option>
+                        <option value="Agriculture Stores">🌱 Agriculture Stores</option>
+                        <option value="Beauty & Saloon">💄 Beauty & Saloon</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>District *</label>
+                    <select id="editShopDistrict" required>
+                        <option value="Kathmandu">Kathmandu</option>
+                        <option value="Lalitpur">Lalitpur</option>
+                        <option value="Bhaktapur">Bhaktapur</option>
+                        <option value="Dhading">Dhading</option>
+                        <option value="Chitwan">Chitwan</option>
+                        <option value="Pokhara">Pokhara</option>
+                        <option value="Butwal">Butwal</option>
+                        <option value="Biratnagar">Biratnagar</option>
+                        <option value="Birgunj">Birgunj</option>
+                        <option value="Nepalgunj">Nepalgunj</option>
+                        <option value="Dhangadhi">Dhangadhi</option>
+                        <option value="Ilam">Ilam</option>
+                        <option value="Jhapa">Jhapa</option>
+                        <option value="Morang">Morang</option>
+                        <option value="Sunsari">Sunsari</option>
+                        <option value="Kaski">Kaski</option>
+                        <option value="Tanahu">Tanahu</option>
+                        <option value="Syangja">Syangja</option>
+                        <option value="Gorkha">Gorkha</option>
+                        <option value="Nuwakot">Nuwakot</option>
+                        <option value="Rasuwa">Rasuwa</option>
+                        <option value="Sindhupalchok">Sindhupalchok</option>
+                        <option value="Kavrepalanchok">Kavrepalanchok</option>
+                        <option value="Dolakha">Dolakha</option>
+                        <option value="Ramechhap">Ramechhap</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Address *</label><input type="text" id="editShopAddress" required></div>
+                <div class="form-group"><label>Description</label><textarea id="editShopDescription"></textarea></div>
+                <div class="form-group"><label>Delivery Time</label><input type="text" id="editShopDelivery"></div>
+                <div class="form-group"><label>Opening Time</label><input type="text" id="editShopOpenTime"></div>
+                <div class="form-group"><label>Closing Time</label><input type="text" id="editShopCloseTime"></div>
+                <div class="form-group">
+                    <label>Shop Cover Photo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editShopPhoto" accept="image/*" onchange="previewImage(this, 'editShopPhotoPreview')">
+                        <div class="file-label">📸 Change cover photo</div>
+                    </div>
+                    <div class="file-preview" id="editShopPhotoPreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group">
+                    <label>Shop Logo</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editShopLogo" accept="image/*" onchange="previewImage(this, 'editShopLogoPreview')">
+                        <div class="file-label">🖼️ Change logo</div>
+                    </div>
+                    <div class="file-preview" id="editShopLogoPreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group"><label><input type="checkbox" id="editShopActive"> Active</label></div>
+                <div class="form-group"><label><input type="checkbox" id="editShopVerified"> Verified</label></div>
+                <div class="form-group"><label><input type="checkbox" id="editShopOpen"> Open Now</label></div>
+                <button type="submit" class="btn-primary">💾 Update Shop</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== EDIT PRODUCT MODAL ===== -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 id="modalTitle">Edit Product</h2>
+                <span class="modal-close" onclick="closeModal()">✕</span>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group"><label>Product Name *</label><input type="text" id="editProdName" required></div>
+                <div class="form-group"><label>Description</label><textarea id="editProdDescription"></textarea></div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="editProdCategory" required>
+                        <option value="Grocery">🛒 Grocery</option>
+                        <option value="Mobile">📱 Mobile</option>
+                        <option value="Fashion">👕 Fashion</option>
+                        <option value="Electronics">💻 Electronics</option>
+                        <option value="Food">🍽️ Food</option>
+                        <option value="Hardware">🔧 Hardware</option>
+                        <option value="Pharmacy">💊 Pharmacy</option>
+                        <option value="Agriculture">🌱 Agriculture</option>
+                        <option value="Beauty">💄 Beauty</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Price (Rs.) *</label><input type="number" id="editProdPrice" required min="0"></div>
+                <div class="form-group"><label>Unit</label><input type="text" id="editProdUnit"></div>
+                <div class="form-group"><label>Stock *</label><input type="number" id="editProdStock" required min="0"></div>
+                <div class="form-group"><label>Discount Price</label><input type="number" id="editProdDiscountPrice" min="0"></div>
+                <div class="form-group">
+                    <label>On Sale</label>
+                    <select id="editProdOnSale"><option value="false">No</option><option value="true">Yes</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Product Image</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editProdImage" accept="image/*" onchange="previewImage(this, 'editProdImagePreview')">
+                        <div class="file-label">📸 Change image</div>
+                    </div>
+                    <div class="file-preview" id="editProdImagePreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group"><label><input type="checkbox" id="editProdActive"> Active</label></div>
+                <button type="submit" class="btn-primary">💾 Update Product</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== EDIT USER MODAL ===== -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Edit User</h2>
+                <span class="modal-close" onclick="closeUserModal()">✕</span>
+            </div>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group"><label>Name *</label><input type="text" id="editUserName" required></div>
+                <div class="form-group"><label>Email *</label><input type="email" id="editUserEmail" required></div>
+                <div class="form-group">
+                    <label>Role *</label>
+                    <select id="editUserRole" required>
+                        <option value="customer">👤 Customer</option>
+                        <option value="shop">🏪 Shop Owner</option>
+                        <option value="admin">🛡️ Admin</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Phone</label><input type="tel" id="editUserPhone"></div>
+                <div class="form-group"><label>Address</label><input type="text" id="editUserAddress"></div>
+                <button type="submit" class="btn-primary">💾 Update User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== EDIT BANNER MODAL ===== -->
+    <div class="modal-overlay" id="editBannerModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Edit Banner</h2>
+                <span class="modal-close" onclick="closeBannerModal()">✕</span>
+            </div>
+            <form id="editBannerForm">
+                <input type="hidden" id="editBannerId">
+                <div class="form-group">
+                    <label>Banner Image</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editBannerImage" accept="image/*" onchange="previewImage(this, 'editBannerImagePreview')">
+                        <div class="file-label">📸 Change image</div>
+                    </div>
+                    <div class="file-preview" id="editBannerImagePreview"><img src="" alt="Preview"></div>
+                </div>
+                <div class="form-group"><label>Title</label><input type="text" id="editBannerTitle"></div>
+                <div class="form-group"><label>Subtitle</label><input type="text" id="editBannerSubtitle"></div>
+                <div class="form-group"><label>Link URL</label><input type="url" id="editBannerLink"></div>
+                <div class="form-group"><label>Display Order</label><input type="number" id="editBannerOrder"></div>
+                <div class="form-group"><label><input type="checkbox" id="editBannerActive"> Active</label></div>
+                <button type="submit" class="btn-primary">💾 Update Banner</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, onAuthStateChanged } from 'firebase/auth';
+        import {
+            getFirestore,
+            collection,
+            doc,
+            getDocs,
+            getDoc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            query,
+            where,
+            orderBy,
+            serverTimestamp
+        } from 'firebase/firestore';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJLnUB8XnXWPEtSRAMuQr9ASmD16HLIJc",
+            authDomain: "bishalshrestha17-de676.firebaseapp.com",
+            projectId: "bishalshrestha17-de676",
+            storageBucket: "bishalshrestha17-de676.firebasestorage.app",
+            messagingSenderId: "631628771230",
+            appId: "1:631628771230:web:389c6430535f6a46b6708f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let allShops = [];
+        let allProducts = [];
+        let allUsers = [];
+        let allBanners = [];
+        let editingShopId = null;
+        let editingProductId = null;
+        let editingUserId = null;
+        let editingBannerId = null;
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const profileAvatar = document.getElementById('profileAvatar');
+        const statShops = document.getElementById('statShops');
+        const statProducts = document.getElementById('statProducts');
+        const statUsers = document.getElementById('statUsers');
+        const statOrders = document.getElementById('statOrders');
+        const statBanners = document.getElementById('statBanners');
+        const shopsTableContainer = document.getElementById('shopsTableContainer');
+        const productsTableContainer = document.getElementById('productsTableContainer');
+        const usersTableContainer = document.getElementById('usersTableContainer');
+        const bannersListContainer = document.getElementById('bannersListContainer');
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        window.showToast = showToast;
+
+        // ============================================================
+        // CHECK ADMIN
+        // ============================================================
+        async function checkAdmin() {
+            const user = auth.currentUser;
+            if (!user) {
+                showToast('Please login', 'error');
+                window.location.href = 'auth.html';
+                return false;
+            }
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const role = userDoc.data().role;
+                    if (role !== 'admin') {
+                        showToast('Access denied. Admin only.', 'error');
+                        window.location.href = 'index.html';
+                        return false;
+                    }
+                    return true;
+                }
+                showToast('User not found', 'error');
+                window.location.href = 'auth.html';
+                return false;
+            } catch (error) {
+                console.error('Error checking admin:', error);
+                showToast('Failed to verify admin', 'error');
+                return false;
+            }
+        }
+
+        // ============================================================
+        // UPLOAD TO IMAGEBB
+        // ============================================================
+        async function uploadToImageBB(file) {
+            return new Promise((resolve, reject) => {
+                const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    reject(new Error('Invalid file type. Use JPG, PNG, WEBP, or GIF.'));
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    reject(new Error('Image must be under 5MB.'));
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64 = e.target.result.split(',')[1];
+                    const formData = new FormData();
+                    formData.append('key', 'f69fb2e400656818bbdb2b33cb144c3f');
+                    formData.append('image', base64);
+                    try {
+                        const response = await fetch('https://api.imgbb.com/1/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            resolve(data.data.url);
+                        } else {
+                            reject(new Error(data.error?.message || 'Upload failed'));
+                        }
+                    } catch (error) {
+                        reject(new Error('Upload failed: ' + error.message));
+                    }
+                };
+                reader.onerror = () => reject(new Error('Failed to read file'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================================
+        // PREVIEW IMAGE
+        // ============================================================
+        window.previewImage = function(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.querySelector('img').src = e.target.result;
+                    preview.classList.add('show');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        // ============================================================
+        // GENERATE UNIQUE SHOP ID
+        // ============================================================
+        function generateShopId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = 'SIM';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // ============================================================
+        // LOAD SHOPS FOR SELECT
+        // ============================================================
+        async function loadShopsForSelect() {
+            try {
+                const shopsSnap = await getDocs(collection(db, 'shops'));
+                const shops = shopsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const select = document.getElementById('prodShopId');
+                if (select) {
+                    select.innerHTML = '<option value="">Select Shop</option>' + 
+                        shops.map(shop => `<option value="${shop.shopId || shop.id}">${shop.shopName} (${shop.shopId || shop.id})</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Error loading shops for select:', error);
+            }
+        }
+
+        // ============================================================
+        // LOAD STATS
+        // ============================================================
+        async function loadStats() {
+            try {
+                const shopsSnap = await getDocs(collection(db, 'shops'));
+                const productsSnap = await getDocs(collection(db, 'products'));
+                const usersSnap = await getDocs(collection(db, 'users'));
+                const ordersSnap = await getDocs(collection(db, 'orders'));
+                const bannersSnap = await getDocs(collection(db, 'banners'));
+
+                statShops.textContent = shopsSnap.size;
+                statProducts.textContent = productsSnap.size;
+                statUsers.textContent = usersSnap.size;
+                statOrders.textContent = ordersSnap.size;
+                statBanners.textContent = bannersSnap.size;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // ============================================================
+        // CREATE SHOP
+        // ============================================================
+        document.getElementById('createShopForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('createShopBtn');
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
+
+            try {
+                const shopName = document.getElementById('shopName').value.trim();
+                const ownerName = document.getElementById('ownerName').value.trim();
+                const ownerEmail = document.getElementById('ownerEmail').value.trim();
+                const phone = document.getElementById('shopPhone').value.trim();
+                const whatsapp = document.getElementById('shopWhatsapp').value.trim();
+                const pan = document.getElementById('shopPan').value.trim();
+                const category = document.getElementById('shopCategory').value;
+                const district = document.getElementById('shopDistrict').value;
+                const address = document.getElementById('shopAddress').value.trim();
+                const description = document.getElementById('shopDescription').value.trim();
+                const delivery = document.getElementById('shopDelivery').value.trim();
+                const openTime = document.getElementById('shopOpenTime').value.trim();
+                const closeTime = document.getElementById('shopCloseTime').value.trim();
+
+                if (!shopName || !ownerName || !ownerEmail || !phone || !category || !district || !address) {
+                    showToast('Please fill in all required fields', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '🏪 Create Shop';
+                    return;
+                }
+
+                let photoURL = '', logoURL = '';
+                const photoFile = document.getElementById('shopPhoto').files[0];
+                const logoFile = document.getElementById('shopLogo').files[0];
+                if (photoFile) photoURL = await uploadToImageBB(photoFile);
+                if (logoFile) logoURL = await uploadToImageBB(logoFile);
+
+                const shopId = generateShopId();
+                const shopData = {
+                    shopId, shopName, ownerName, ownerId: '', email: ownerEmail, phone,
+                    whatsappNumber: whatsapp || phone, panNo: pan || '', category, district, address,
+                    description: description || '', shopPhotoURL: photoURL || '', logoURL: logoURL || '',
+                    rating: 0, reviewCount: 0, isVerified: false, isActive: true,
+                    deliveryTime: delivery || '1-2 days', openTime: openTime || '9:00 AM',
+                    closeTime: closeTime || '9:00 PM', isOpen: true,
+                    lat: 27.7172, lng: 85.3240,
+                    createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+                    stats: { totalProducts: 0, totalOrders: 0, totalRevenue: 0 }
+                };
+                await setDoc(doc(db, 'shops', shopId), shopData);
+
+                const usersSnap = await getDocs(query(collection(db, 'users'), where('email', '==', ownerEmail)));
+                if (!usersSnap.empty) {
+                    const userDoc = usersSnap.docs[0];
+                    await updateDoc(doc(db, 'users', userDoc.id), { role: 'shop', shopId, updatedAt: serverTimestamp() });
+                }
+
+                showToast(`Shop "${shopName}" created! 🎉`, 'success');
+                this.reset();
+                document.getElementById('shopPhotoPreview').classList.remove('show');
+                document.getElementById('shopLogoPreview').classList.remove('show');
+                loadShopsList();
+                loadStats();
+                loadShopsForSelect();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🏪 Create Shop';
+            }
+        });
+
+        // ============================================================
+        // LOAD SHOPS LIST WITH EDIT
+        // ============================================================
+        async function loadShopsList() {
+            try {
+                const shopsSnap = await getDocs(collection(db, 'shops'));
+                allShops = shopsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderShopsTable(allShops);
+            } catch (error) {
+                console.error('Error loading shops:', error);
+                shopsTableContainer.innerHTML = `<div class="empty-state"><span class="emoji">⚠️</span><h3>Failed to load</h3></div>`;
+            }
+        }
+
+        function renderShopsTable(shops) {
+            if (shops.length === 0) {
+                shopsTableContainer.innerHTML = `<div class="empty-state"><span class="emoji">🏪</span><h3>No shops yet</h3><p>Create your first shop.</p></div>`;
+                return;
+            }
+            shopsTableContainer.innerHTML = `
+                <table>
+                    <thead><tr><th>Logo</th><th>Shop ID</th><th>Name</th><th>Category</th><th>Owner</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        ${shops.map(shop => `
+                            <tr>
+                                <td><img class="shop-logo-sm" src="${shop.logoURL || 'https://picsum.photos/40/40'}" alt="${shop.shopName}" onerror="this.src='https://picsum.photos/40/40'"></td>
+                                <td><strong>${shop.shopId || shop.id}</strong></td>
+                                <td>${shop.shopName || 'N/A'}</td>
+                                <td>${shop.category || 'N/A'}</td>
+                                <td>${shop.ownerName || 'N/A'}</td>
+                                <td><span style="color:${shop.isActive ? '#000' : '#cc0000'};font-weight:600;">${shop.isActive ? '✅ Active' : '❌ Inactive'}</span></td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn-secondary" onclick="editShop('${shop.id}')">✏️ Edit</button>
+                                        <button class="btn-secondary" onclick="toggleShopStatus('${shop.id}')">${shop.isActive ? 'Deactivate' : 'Activate'}</button>
+                                        <button class="btn-danger" onclick="deleteShop('${shop.id}')">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        window.filterShops = function(search) {
+            const q = search.toLowerCase();
+            const filtered = allShops.filter(s => 
+                (s.shopName || '').toLowerCase().includes(q) ||
+                (s.shopId || '').toLowerCase().includes(q) ||
+                (s.category || '').toLowerCase().includes(q) ||
+                (s.ownerName || '').toLowerCase().includes(q)
+            );
+            renderShopsTable(filtered);
+        };
+
+        // ============================================================
+        // EDIT SHOP
+        // ============================================================
+        window.editShop = function(shopId) {
+            const shop = allShops.find(s => s.id === shopId);
+            if (!shop) { showToast('Shop not found', 'error'); return; }
+            editingShopId = shopId;
+            document.getElementById('editShopId').value = shopId;
+            document.getElementById('editShopName').value = shop.shopName || '';
+            document.getElementById('editShopOwner').value = shop.ownerName || '';
+            document.getElementById('editShopEmail').value = shop.email || '';
+            document.getElementById('editShopPhone').value = shop.phone || '';
+            document.getElementById('editShopWhatsapp').value = shop.whatsappNumber || '';
+            document.getElementById('editShopPan').value = shop.panNo || '';
+            document.getElementById('editShopCategory').value = shop.category || 'Other';
+            document.getElementById('editShopDistrict').value = shop.district || 'Kathmandu';
+            document.getElementById('editShopAddress').value = shop.address || '';
+            document.getElementById('editShopDescription').value = shop.description || '';
+            document.getElementById('editShopDelivery').value = shop.deliveryTime || '';
+            document.getElementById('editShopOpenTime').value = shop.openTime || '';
+            document.getElementById('editShopCloseTime').value = shop.closeTime || '';
+            document.getElementById('editShopActive').checked = shop.isActive !== false;
+            document.getElementById('editShopVerified').checked = shop.isVerified === true;
+            document.getElementById('editShopOpen').checked = shop.isOpen === true;
+            
+            // Preview existing images
+            if (shop.logoURL) {
+                const preview = document.getElementById('editShopLogoPreview');
+                preview.querySelector('img').src = shop.logoURL;
+                preview.classList.add('show');
+            }
+            if (shop.shopPhotoURL) {
+                const preview = document.getElementById('editShopPhotoPreview');
+                preview.querySelector('img').src = shop.shopPhotoURL;
+                preview.classList.add('show');
+            }
+            document.getElementById('editShopModal').classList.add('show');
+        };
+
+        window.closeShopModal = function() {
+            document.getElementById('editShopModal').classList.remove('show');
+            editingShopId = null;
+        };
+
+        document.getElementById('editShopForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            try {
+                const shopId = document.getElementById('editShopId').value;
+                const data = {
+                    shopName: document.getElementById('editShopName').value.trim(),
+                    ownerName: document.getElementById('editShopOwner').value.trim(),
+                    email: document.getElementById('editShopEmail').value.trim(),
+                    phone: document.getElementById('editShopPhone').value.trim(),
+                    whatsappNumber: document.getElementById('editShopWhatsapp').value.trim(),
+                    panNo: document.getElementById('editShopPan').value.trim(),
+                    category: document.getElementById('editShopCategory').value,
+                    district: document.getElementById('editShopDistrict').value,
+                    address: document.getElementById('editShopAddress').value.trim(),
+                    description: document.getElementById('editShopDescription').value.trim(),
+                    deliveryTime: document.getElementById('editShopDelivery').value.trim(),
+                    openTime: document.getElementById('editShopOpenTime').value.trim(),
+                    closeTime: document.getElementById('editShopCloseTime').value.trim(),
+                    isActive: document.getElementById('editShopActive').checked,
+                    isVerified: document.getElementById('editShopVerified').checked,
+                    isOpen: document.getElementById('editShopOpen').checked,
+                    updatedAt: serverTimestamp()
+                };
+
+                const logoFile = document.getElementById('editShopLogo').files[0];
+                if (logoFile) data.logoURL = await uploadToImageBB(logoFile);
+                const photoFile = document.getElementById('editShopPhoto').files[0];
+                if (photoFile) data.shopPhotoURL = await uploadToImageBB(photoFile);
+
+                await updateDoc(doc(db, 'shops', shopId), data);
+                showToast('Shop updated! ✅', 'success');
+                closeShopModal();
+                loadShopsList();
+                loadStats();
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Update Shop';
+            }
+        });
+
+        // ============================================================
+        // SHOP ACTIONS
+        // ============================================================
+        window.toggleShopStatus = async function(shopId) {
+            try {
+                const shopRef = doc(db, 'shops', shopId);
+                const shopDoc = await getDoc(shopRef);
+                if (shopDoc.exists()) {
+                    const current = shopDoc.data().isActive;
+                    await updateDoc(shopRef, { isActive: !current, updatedAt: serverTimestamp() });
+                    showToast(`Shop ${!current ? 'activated' : 'deactivated'}`, 'success');
+                    loadShopsList();
+                    loadStats();
+                }
+            } catch (error) {
+                showToast('Failed to update', 'error');
+            }
+        };
+
+        window.deleteShop = async function(shopId) {
+            if (!confirm('⚠️ Delete this shop? This cannot be undone!')) return;
+            try {
+                await deleteDoc(doc(db, 'shops', shopId));
+                showToast('Shop deleted', 'success');
+                loadShopsList();
+                loadStats();
+            } catch (error) {
+                showToast('Failed to delete', 'error');
+            }
+        };
+
+        // ============================================================
+        // PRODUCTS WITH EDIT
+        // ============================================================
+        async function loadProductsList() {
+            try {
+                const productsSnap = await getDocs(collection(db, 'products'));
+                allProducts = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProductsTable(allProducts);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                productsTableContainer.innerHTML = `<div class="empty-state"><span class="emoji">⚠️</span><h3>Failed to load</h3></div>`;
+            }
+        }
+
+        function renderProductsTable(products) {
+            if (products.length === 0) {
+                productsTableContainer.innerHTML = `<div class="empty-state"><span class="emoji">📦</span><h3>No products yet</h3><p>Add products.</p></div>`;
+                return;
+            }
+            productsTableContainer.innerHTML = `
+                <table>
+                    <thead><tr><th>Image</th><th>Product</th><th>Shop</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        ${products.map(product => `
+                            <tr>
+                                <td><img class="product-img" src="${product.imageURL || 'https://picsum.photos/50/50'}" alt="${product.productName}" onerror="this.src='https://picsum.photos/50/50'"></td>
+                                <td><strong>${product.productName || 'N/A'}</strong></td>
+                                <td>${product.shopName || product.shopId || 'N/A'}</td>
+                                <td>Rs. ${(product.price || 0).toLocaleString()}</td>
+                                <td><span style="color:${(product.stock || 0) < 5 ? '#cc0000' : '#000'};">${product.stock || 0}${(product.stock || 0) < 5 ? ' ⚠️' : ''}</span></td>
+                                <td><span style="color:${product.isActive ? '#000' : '#cc0000'};">${product.isActive ? '✅ Active' : '❌ Inactive'}</span></td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn-secondary" onclick="editProduct('${product.id}')">✏️ Edit</button>
+                                        <button class="btn-secondary" onclick="toggleProduct('${product.id}')">${product.isActive ? 'Deactivate' : 'Activate'}</button>
+                                        <button class="btn-danger" onclick="deleteProduct('${product.id}')">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        window.filterProducts = function(search) {
+            const q = search.toLowerCase();
+            const filtered = allProducts.filter(p => 
+                (p.productName || '').toLowerCase().includes(q) ||
+                (p.shopName || '').toLowerCase().includes(q) ||
+                (p.category || '').toLowerCase().includes(q)
+            );
+            renderProductsTable(filtered);
+        };
+
+        // ============================================================
+        // EDIT PRODUCT
+        // ============================================================
+        window.editProduct = function(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) { showToast('Product not found', 'error'); return; }
+            editingProductId = productId;
+            document.getElementById('editProductId').value = productId;
+            document.getElementById('editProdName').value = product.productName || '';
+            document.getElementById('editProdDescription').value = product.description || '';
+            document.getElementById('editProdCategory').value = product.category || 'Grocery';
+            document.getElementById('editProdPrice').value = product.price || '';
+            document.getElementById('editProdUnit').value = product.unit || '';
+            document.getElementById('editProdStock').value = product.stock || '';
+            document.getElementById('editProdDiscountPrice').value = product.discountPrice || '';
+            document.getElementById('editProdOnSale').value = product.onSale ? 'true' : 'false';
+            document.getElementById('editProdActive').checked = product.isActive !== false;
+            
+            if (product.imageURL) {
+                const preview = document.getElementById('editProdImagePreview');
+                preview.querySelector('img').src = product.imageURL;
+                preview.classList.add('show');
+            }
+            document.getElementById('modalTitle').textContent = 'Edit Product';
+            document.getElementById('editModal').classList.add('show');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('editModal').classList.remove('show');
+            editingProductId = null;
+        };
+
+        document.getElementById('editProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            try {
+                const productId = document.getElementById('editProductId').value;
+                const data = {
+                    productName: document.getElementById('editProdName').value.trim(),
+                    description: document.getElementById('editProdDescription').value.trim(),
+                    category: document.getElementById('editProdCategory').value,
+                    price: parseFloat(document.getElementById('editProdPrice').value),
+                    unit: document.getElementById('editProdUnit').value.trim(),
+                    stock: parseInt(document.getElementById('editProdStock').value),
+                    discountPrice: parseFloat(document.getElementById('editProdDiscountPrice').value) || null,
+                    onSale: document.getElementById('editProdOnSale').value === 'true',
+                    isActive: document.getElementById('editProdActive').checked,
+                    updatedAt: serverTimestamp()
+                };
+
+                const imageFile = document.getElementById('editProdImage').files[0];
+                if (imageFile) data.imageURL = await uploadToImageBB(imageFile);
+
+                await updateDoc(doc(db, 'products', productId), data);
+                showToast('Product updated! ✅', 'success');
+                closeModal();
+                loadProductsList();
+                loadStats();
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Update Product';
+            }
+        });
+
+        // ============================================================
+        // PRODUCT ACTIONS
+        // ============================================================
+        window.toggleProduct = async function(productId) {
+            try {
+                const productRef = doc(db, 'products', productId);
+                const productDoc = await getDoc(productRef);
+                if (productDoc.exists()) {
+                    const current = productDoc.data().isActive;
+                    await updateDoc(productRef, { isActive: !current, updatedAt: serverTimestamp() });
+                    showToast(`Product ${!current ? 'activated' : 'deactivated'}`, 'success');
+                    loadProductsList();
+                    loadStats();
+                }
+            } catch (error) {
+                showToast('Failed to update', 'error');
+            }
+        };
+
+        window.deleteProduct = async function(productId) {
+            if (!confirm('⚠️ Delete this product? This cannot be undone!')) return;
+            try {
+                await deleteDoc(doc(db, 'products', productId));
+                showToast('Product deleted', 'success');
+                loadProductsList();
+                loadStats();
+            } catch (error) {
+                showToast('Failed to delete', 'error');
+            }
+        };
+
+        // ============================================================
+        // ADD PRODUCT
+        // ============================================================
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('addProductBtn');
+            btn.disabled = true;
+            btn.textContent = 'Adding...';
+            try {
+                const name = document.getElementById('prodName').value.trim();
+                const description = document.getElementById('prodDescription').value.trim();
+                const category = document.getElementById('prodCategory').value;
+                const price = parseFloat(document.getElementById('prodPrice').value);
+                const unit = document.getElementById('prodUnit').value.trim();
+                const stock = parseInt(document.getElementById('prodStock').value);
+                const discountPrice = parseFloat(document.getElementById('prodDiscountPrice').value) || null;
+                const discountPercent = parseInt(document.getElementById('prodDiscountPercent').value) || null;
+                const onSale = document.getElementById('prodOnSale').value === 'true';
+                const shopId = document.getElementById('prodShopId').value;
+                const isActive = document.getElementById('prodActive').checked;
+
+                if (!name || !category || !price || isNaN(stock) || !shopId) {
+                    showToast('Please fill all required fields', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '➕ Add Product';
+                    return;
+                }
+                const shopDoc = await getDoc(doc(db, 'shops', shopId));
+                const shopName = shopDoc.exists() ? shopDoc.data().shopName : 'Shop';
+                let imageURL = '';
+                const imageFile = document.getElementById('prodImage').files[0];
+                if (imageFile) imageURL = await uploadToImageBB(imageFile);
+
+                await setDoc(doc(collection(db, 'products')), {
+                    shopId, shopName, productName: name, description, category, price, unit: unit || '',
+                    stock, sold: 0, discountPrice, discountPercent, onSale, imageURL: imageURL || '',
+                    isActive, createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+                });
+                showToast('Product added! 🎉', 'success');
+                this.reset();
+                document.getElementById('prodImagePreview').classList.remove('show');
+                loadProductsList();
+                loadStats();
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '➕ Add Product';
+            }
+        });
+
+        // ============================================================
+        // USERS WITH EDIT
+        // ============================================================
+        async function loadUsersList() {
+            try {
+                const usersSnap = await getDocs(collection(db, 'users'));
+                allUsers = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderUsersTable(allUsers);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                usersTableContainer.innerHTML = `<div class="empty-state"><span class="emoji">⚠️</span><h3>Failed to load</h3></div>`;
+            }
+        }
+
+        function renderUsersTable(users) {
+            if (users.length === 0) {
+                usersTableContainer.innerHTML = `<div class="empty-state"><span class="emoji">👥</span><h3>No users yet</h3></div>`;
+                return;
+            }
+            usersTableContainer.innerHTML = `
+                <table>
+                    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>${user.name || 'N/A'}</td>
+                                <td>${user.email || 'N/A'}</td>
+                                <td><span style="font-weight:600;">${user.role === 'admin' ? '🛡️ Admin' : user.role === 'shop' ? '🏪 Shop' : '👤 Customer'}</span></td>
+                                <td>${user.phone || 'N/A'}</td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="btn-secondary" onclick="editUser('${user.id}')">✏️ Edit</button>
+                                        <button class="btn-secondary" onclick="changeUserRole('${user.id}', '${user.role}')">Change Role</button>
+                                        <button class="btn-danger" onclick="deleteUser('${user.id}')">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        window.filterUsers = function(search) {
+            const q = search.toLowerCase();
+            const filtered = allUsers.filter(u => 
+                (u.name || '').toLowerCase().includes(q) ||
+                (u.email || '').toLowerCase().includes(q)
+            );
+            renderUsersTable(filtered);
+        };
+
+        // ============================================================
+        // EDIT USER
+        // ============================================================
+        window.editUser = function(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) { showToast('User not found', 'error'); return; }
+            editingUserId = userId;
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUserName').value = user.name || '';
+            document.getElementById('editUserEmail').value = user.email || '';
+            document.getElementById('editUserRole').value = user.role || 'customer';
+            document.getElementById('editUserPhone').value = user.phone || '';
+            document.getElementById('editUserAddress').value = user.address || '';
+            document.getElementById('editUserModal').classList.add('show');
+        };
+
+        window.closeUserModal = function() {
+            document.getElementById('editUserModal').classList.remove('show');
+            editingUserId = null;
+        };
+
+        document.getElementById('editUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            try {
+                const userId = document.getElementById('editUserId').value;
+                const data = {
+                    name: document.getElementById('editUserName').value.trim(),
+                    email: document.getElementById('editUserEmail').value.trim(),
+                    role: document.getElementById('editUserRole').value,
+                    phone: document.getElementById('editUserPhone').value.trim(),
+                    address: document.getElementById('editUserAddress').value.trim(),
+                    updatedAt: serverTimestamp()
+                };
+                await updateDoc(doc(db, 'users', userId), data);
+                showToast('User updated! ✅', 'success');
+                closeUserModal();
+                loadUsersList();
+                loadStats();
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Update User';
+            }
+        });
+
+        // ============================================================
+        // USER ACTIONS
+        // ============================================================
+        window.changeUserRole = async function(userId, currentRole) {
+            const roles = ['customer', 'shop', 'admin'];
+            const currentIndex = roles.indexOf(currentRole);
+            const nextRole = roles[(currentIndex + 1) % roles.length];
+            if (!confirm(`Change role from "${currentRole}" to "${nextRole}"?`)) return;
+            try {
+                await updateDoc(doc(db, 'users', userId), { role: nextRole, updatedAt: serverTimestamp() });
+                showToast(`Role changed to "${nextRole}"`, 'success');
+                loadUsersList();
+            } catch (error) {
+                showToast('Failed to change role', 'error');
+            }
+        };
+
+        window.deleteUser = async function(userId) {
+            if (!confirm('⚠️ Delete this user?')) return;
+            try {
+                await deleteDoc(doc(db, 'users', userId));
+                showToast('User deleted', 'success');
+                loadUsersList();
+                loadStats();
+            } catch (error) {
+                showToast('Failed to delete user', 'error');
+            }
+        };
+
+        // ============================================================
+        // BANNERS
+        // ============================================================
+        async function loadBanners() {
+            try {
+                const q = query(collection(db, 'banners'), orderBy('order', 'asc'));
+                const snap = await getDocs(q);
+                allBanners = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderBannersList();
+            } catch (error) {
+                console.error('Error loading banners:', error);
+                bannersListContainer.innerHTML = `<div class="empty-state"><span class="emoji">⚠️</span><h3>Failed to load banners</h3><p>${error.message}</p></div>`;
+            }
+        }
+
+        function renderBannersList() {
+            if (allBanners.length === 0) {
+                bannersListContainer.innerHTML = `<div class="empty-state"><span class="emoji">🖼️</span><h3>No banners yet</h3><p>Add advertisement banners above.</p></div>`;
+                return;
+            }
+
+            bannersListContainer.innerHTML = allBanners.map(banner => `
+                <div class="banner-preview-card">
+                    <img class="preview-img" src="${banner.imageURL || 'https://picsum.photos/120/70'}" 
+                         alt="${banner.title || 'Banner'}" 
+                         onerror="this.src='https://picsum.photos/120/70'">
+                    <div class="info">
+                        <div class="title">${banner.title || 'Untitled Banner'}</div>
+                        ${banner.subtitle ? `<div class="subtitle">${banner.subtitle}</div>` : ''}
+                        <div class="link">🔗 ${banner.link || 'No link'}</div>
+                        <div style="margin-top:4px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                            <span style="font-size:12px;color:${banner.isActive !== false ? '#00cc00' : '#cc0000'};font-weight:600;">
+                                ${banner.isActive !== false ? '✅ Active' : '❌ Inactive'}
+                            </span>
+                            <span style="font-size:11px;color:#888;">Order: ${banner.order || 0}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:6px;flex-shrink:0;">
+                        <button class="btn-secondary" onclick="editBanner('${banner.id}')">✏️ Edit</button>
+                        <button class="btn-secondary" onclick="toggleBanner('${banner.id}')">${banner.isActive !== false ? 'Deactivate' : 'Activate'}</button>
+                        <button class="btn-danger" onclick="deleteBanner('${banner.id}')">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // EDIT BANNER
+        // ============================================================
+        window.editBanner = function(bannerId) {
+            const banner = allBanners.find(b => b.id === bannerId);
+            if (!banner) { showToast('Banner not found', 'error'); return; }
+            editingBannerId = bannerId;
+            document.getElementById('editBannerId').value = bannerId;
+            document.getElementById('editBannerTitle').value = banner.title || '';
+            document.getElementById('editBannerSubtitle').value = banner.subtitle || '';
+            document.getElementById('editBannerLink').value = banner.link || '';
+            document.getElementById('editBannerOrder').value = banner.order || 1;
+            document.getElementById('editBannerActive').checked = banner.isActive !== false;
+            if (banner.imageURL) {
+                const preview = document.getElementById('editBannerImagePreview');
+                preview.querySelector('img').src = banner.imageURL;
+                preview.classList.add('show');
+            }
+            document.getElementById('editBannerModal').classList.add('show');
+        };
+
+        window.closeBannerModal = function() {
+            document.getElementById('editBannerModal').classList.remove('show');
+            editingBannerId = null;
+        };
+
+        document.getElementById('editBannerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            try {
+                const bannerId = document.getElementById('editBannerId').value;
+                const data = {
+                    title: document.getElementById('editBannerTitle').value.trim() || 'Advertisement',
+                    subtitle: document.getElementById('editBannerSubtitle').value.trim(),
+                    link: document.getElementById('editBannerLink').value.trim() || '/shop-listing.html',
+                    order: parseInt(document.getElementById('editBannerOrder').value) || 1,
+                    isActive: document.getElementById('editBannerActive').checked,
+                    updatedAt: serverTimestamp()
+                };
+
+                const imageFile = document.getElementById('editBannerImage').files[0];
+                if (imageFile) data.imageURL = await uploadToImageBB(imageFile);
+
+                await updateDoc(doc(db, 'banners', bannerId), data);
+                showToast('Banner updated! ✅', 'success');
+                closeBannerModal();
+                loadBanners();
+                loadStats();
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Update Banner';
+            }
+        });
+
+        // ============================================================
+        // BANNER ACTIONS
+        // ============================================================
+        document.getElementById('addBannerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('addBannerBtn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            try {
+                const title = document.getElementById('bannerTitle').value.trim() || 'Advertisement';
+                const subtitle = document.getElementById('bannerSubtitle').value.trim();
+                const link = document.getElementById('bannerLink').value.trim() || '/shop-listing.html';
+                const order = parseInt(document.getElementById('bannerOrder').value) || 1;
+                const isActive = document.getElementById('bannerActive').checked;
+
+                const imageFile = document.getElementById('bannerImage').files[0];
+                if (!imageFile) {
+                    showToast('Please select an image', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '➕ Add Banner';
+                    return;
+                }
+
+                btn.textContent = '📤 Uploading Image...';
+                const imageURL = await uploadToImageBB(imageFile);
+                
+                btn.textContent = '💾 Saving to Database...';
+
+                await setDoc(doc(collection(db, 'banners')), {
+                    imageURL,
+                    title,
+                    subtitle: subtitle || '',
+                    link: link || '/shop-listing.html',
+                    order,
+                    isActive,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+
+                showToast('✅ Banner added successfully! 🎉', 'success');
+                this.reset();
+                document.getElementById('bannerImagePreview').classList.remove('show');
+                loadBanners();
+                loadStats();
+
+            } catch (error) {
+                console.error('Error adding banner:', error);
+                showToast('❌ Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '➕ Add Banner';
+            }
+        });
+
+        window.toggleBanner = async function(bannerId) {
+            try {
+                const bannerRef = doc(db, 'banners', bannerId);
+                const bannerDoc = await getDoc(bannerRef);
+                if (bannerDoc.exists()) {
+                    const current = bannerDoc.data().isActive;
+                    await updateDoc(bannerRef, { 
+                        isActive: current === false ? true : false, 
+                        updatedAt: serverTimestamp() 
+                    });
+                    showToast(`Banner ${current === false ? 'activated' : 'deactivated'}`, 'success');
+                    loadBanners();
+                    loadStats();
+                }
+            } catch (error) {
+                showToast('Failed to update banner', 'error');
+            }
+        };
+
+        window.deleteBanner = async function(bannerId) {
+            if (!confirm('⚠️ Delete this banner permanently?')) return;
+            try {
+                await deleteDoc(doc(db, 'banners', bannerId));
+                showToast('Banner deleted', 'success');
+                loadBanners();
+                loadStats();
+            } catch (error) {
+                showToast('Failed to delete banner', 'error');
+            }
+        };
+
+        // ============================================================
+        // NOTIFICATIONS
+        // ============================================================
+        document.getElementById('notifForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('sendNotifBtn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            try {
+                const title = document.getElementById('notifTitle').value.trim();
+                const body = document.getElementById('notifBody').value.trim();
+                const target = document.getElementById('notifTarget').value;
+                const imageURL = document.getElementById('notifImage').value.trim();
+                const link = document.getElementById('notifLink').value.trim();
+                if (!title || !body) {
+                    showToast('Please fill title and message', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '📨 Send Notification';
+                    return;
+                }
+                await setDoc(doc(collection(db, 'notifications')), {
+                    title, body, imageURL: imageURL || '', link: link || '',
+                    sentBy: 'admin', targetRole: target, isActive: true, createdAt: serverTimestamp()
+                });
+                showToast('Notification sent! 📨', 'success');
+                this.reset();
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📨 Send Notification';
+            }
+        });
+
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('sendEmailBtn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            try {
+                const subject = document.getElementById('emailSubject').value.trim();
+                const body = document.getElementById('emailBody').value.trim();
+                const target = document.getElementById('emailTarget').value;
+                if (!subject || !body) {
+                    showToast('Please fill subject and body', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '📧 Send Email';
+                    return;
+                }
+                let usersQuery = collection(db, 'users');
+                if (target !== 'all') usersQuery = query(collection(db, 'users'), where('role', '==', target));
+                const usersSnap = await getDocs(usersQuery);
+                const users = usersSnap.docs.map(doc => doc.data());
+                if (users.length === 0) {
+                    showToast('No users found', 'warning');
+                    btn.disabled = false;
+                    btn.textContent = '📧 Send Email';
+                    return;
+                }
+                await setDoc(doc(collection(db, 'notifications')), {
+                    title: subject, body, sentBy: 'admin', targetRole: target, type: 'email',
+                    isActive: true, createdAt: serverTimestamp()
+                });
+                showToast(`Email sent to ${users.length} users! 📧`, 'success');
+                this.reset();
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📧 Send Email';
+            }
+        });
+
+        // ============================================================
+        // SETTINGS
+        // ============================================================
+        document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+            try {
+                const siteName = document.getElementById('siteName').value.trim();
+                let logoURL = '';
+                const logoFile = document.getElementById('siteLogoUpload').files[0];
+                if (logoFile) logoURL = await uploadToImageBB(logoFile);
+
+                let adImageURL = '';
+                const adFile = document.getElementById('adImageUpload').files[0];
+                if (adFile) adImageURL = await uploadToImageBB(adFile);
+
+                const settingsRef = doc(db, 'siteSettings', 'general');
+                const settingsDoc = await getDoc(settingsRef);
+                const settingsData = { 
+                    siteName: siteName || 'Simha', 
+                    updatedAt: serverTimestamp() 
+                };
+                if (logoURL) settingsData.logoURL = logoURL;
+                if (adImageURL) settingsData.adImageURL = adImageURL;
+
+                if (settingsDoc.exists()) {
+                    await updateDoc(settingsRef, settingsData);
+                } else {
+                    await setDoc(settingsRef, settingsData);
+                }
+                showToast('Settings saved! ✅', 'success');
+                document.getElementById('siteLogoPreview').classList.remove('show');
+                document.getElementById('adImagePreview').classList.remove('show');
+            } catch (error) {
+                showToast('Failed: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Save Settings';
+            }
+        });
+
+        async function loadSettings() {
+            try {
+                const settingsDoc = await getDoc(doc(db, 'siteSettings', 'general'));
+                if (settingsDoc.exists()) {
+                    const data = settingsDoc.data();
+                    if (data.siteName) document.getElementById('siteName').value = data.siteName;
+                    if (data.logoURL) {
+                        const preview = document.getElementById('siteLogoPreview');
+                        preview.querySelector('img').src = data.logoURL;
+                        preview.classList.add('show');
+                    }
+                    if (data.adImageURL) {
+                        const preview = document.getElementById('adImagePreview');
+                        preview.querySelector('img').src = data.adImageURL;
+                        preview.classList.add('show');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        // ============================================================
+        // SWITCH TAB
+        // ============================================================
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.admin-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                const tabName = tab.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+                content.classList.toggle('active', content.id === 'tab' + tabName);
+            });
+        };
+
+        // ============================================================
+        // PROFILE AVATAR
+        // ============================================================
+        function updateProfileAvatar(user) {
+            if (user) {
+                const name = user.displayName || user.email || 'User';
+                const initial = name.charAt(0).toUpperCase();
+                profileAvatar.textContent = initial;
+                profileAvatar.style.background = '#000';
+                profileAvatar.style.color = '#fff';
+                profileAvatar.style.border = '2px solid #000';
+                if (user.photoURL) {
+                    profileAvatar.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+                }
+            } else {
+                profileAvatar.textContent = '👤';
+                profileAvatar.style.background = 'transparent';
+                profileAvatar.style.color = '#000';
+                profileAvatar.style.border = '2px solid #e0e0e0';
+                profileAvatar.innerHTML = '👤';
+            }
+        }
+
+        // ============================================================
+        // AUTH STATE
+        // ============================================================
+        onAuthStateChanged(auth, async (user) => {
+            updateProfileAvatar(user);
+            if (user) {
+                const isAdmin = await checkAdmin();
+                if (isAdmin) {
+                    loadStats();
+                    loadShopsList();
+                    loadProductsList();
+                    loadUsersList();
+                    loadBanners();
+                    loadShopsForSelect();
+                    loadSettings();
+                }
+            } else {
+                window.location.href = 'auth.html';
+            }
+        });
+
+        // ============================================================
+        // GLOBAL
+        // ============================================================
+        window.previewImage = window.previewImage;
+        window.toggleShopStatus = window.toggleShopStatus;
+        window.deleteShop = window.deleteShop;
+        window.toggleProduct = window.toggleProduct;
+        window.deleteProduct = window.deleteProduct;
+        window.editProduct = window.editProduct;
+        window.closeModal = window.closeModal;
+        window.editShop = window.editShop;
+        window.closeShopModal = window.closeShopModal;
+        window.editUser = window.editUser;
+        window.closeUserModal = window.closeUserModal;
+        window.editBanner = window.editBanner;
+        window.closeBannerModal = window.closeBannerModal;
+        window.toggleBanner = window.toggleBanner;
+        window.deleteBanner = window.deleteBanner;
+        window.changeUserRole = window.changeUserRole;
+        window.deleteUser = window.deleteUser;
+        window.filterShops = window.filterShops;
+        window.filterProducts = window.filterProducts;
+        window.filterUsers = window.filterUsers;
+        window.switchTab = window.switchTab;
+        window.showToast = showToast;
+
+        console.log('🚀 Admin Panel loaded with FULL EDIT features for all modules');
+        console.log('📸 Features: Edit Shops, Products, Users, Banners, Search, Filter, and more');
+    </script>
+</body>
+</html>

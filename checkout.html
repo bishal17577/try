@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Checkout - Simha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            color: #000000;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+            font-size: inherit;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 16px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .navbar .logo span {
+            font-size: 24px;
+        }
+        .navbar .logo .sub {
+            font-weight: 400;
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-left: 4px;
+        }
+        .navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar .nav-actions .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .navbar .nav-actions .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            object-fit: cover;
+        }
+        .navbar .nav-actions .profile-avatar:hover {
+            border-color: #000;
+        }
+        .navbar .nav-actions .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ===== SECTION ===== */
+        .section {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .section h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        /* ===== ORDER SUMMARY ===== */
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        .order-summary-item:last-child {
+            border-bottom: none;
+        }
+        .order-summary-item .name {
+            flex: 1;
+        }
+        .order-summary-item .qty {
+            margin: 0 12px;
+            color: #888;
+        }
+        .order-summary-item .price {
+            font-weight: 600;
+        }
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 800;
+            padding-top: 12px;
+            border-top: 2px solid #000;
+            margin-top: 8px;
+        }
+        .shop-name-header {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        /* ===== FORM ===== */
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #000;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #000;
+        }
+        .form-group input:disabled {
+            background: #f5f5f5;
+            opacity: 0.7;
+        }
+
+        /* ===== LOCATION ===== */
+        .location-section {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .location-section .location-status {
+            flex: 1;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        .location-section .location-status.success {
+            background: #e8f5ee;
+            border-color: #000;
+        }
+        .location-section .location-status.error {
+            background: #fef0f0;
+            border-color: #cc0000;
+            color: #cc0000;
+        }
+        .btn-secondary {
+            padding: 10px 20px;
+            background: transparent;
+            color: #000;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .btn-secondary:hover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+        .btn-secondary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ===== PLACE ORDER ===== */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.8;
+        }
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-primary .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto;
+        }
+        .btn-primary.loading .spinner {
+            display: block;
+        }
+        .btn-primary.loading .btn-text {
+            display: none;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+        }
+        .toast {
+            background: #000;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            pointer-events: auto;
+            animation: slideUp 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .toast.success { background: #000; }
+        .toast.error { background: #cc0000; }
+        .toast.warning { background: #cc8800; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== COUNTDOWN ===== */
+        .countdown-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
+        }
+        .countdown-overlay.show {
+            display: flex;
+        }
+        .countdown-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+        }
+        .countdown-box .emoji {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .countdown-box h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .countdown-box p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .countdown-box .number {
+            font-size: 48px;
+            font-weight: 800;
+        }
+        .countdown-box .cancel-btn {
+            margin-top: 16px;
+            padding: 8px 24px;
+            background: transparent;
+            color: #000;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .countdown-box .cancel-btn:hover {
+            border-color: #000;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .section {
+                padding: 16px;
+            }
+            .location-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .location-section .location-status {
+                min-height: 36px;
+                font-size: 13px;
+            }
+            .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="logo">
+            <span>🦁</span>
+            Simha
+            <span class="sub">Nepal</span>
+        </div>
+        <div class="nav-actions">
+            <button class="back-btn" onclick="window.location.href='cart.html'">←</button>
+            <div class="profile-avatar" id="profileAvatar" onclick="window.location.href='profile.html'">👤</div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="container">
+
+        <h1 style="font-size:24px;font-weight:800;margin:16px 0;">📋 Checkout</h1>
+
+        <!-- ===== ORDER SUMMARY ===== -->
+        <div class="section" id="orderSummary">
+            <h2>Order Summary</h2>
+            <div class="shop-name-header" id="summaryShopName">Shop Name</div>
+            <div id="summaryItems">
+                <div style="text-align:center;padding:20px;color:#888;">Loading...</div>
+            </div>
+            <div class="order-total">
+                <span>Total</span>
+                <span id="summaryTotal">Rs. 0</span>
+            </div>
+        </div>
+
+        <!-- ===== CUSTOMER INFO ===== -->
+        <div class="section">
+            <h2>Customer Information</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="customerName" placeholder="Your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="customerEmail" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="customerPhone" placeholder="9841234567" required>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address *</label>
+                    <input type="text" id="customerAddress" placeholder="Street, Tole, City" required>
+                </div>
+                <div class="form-group">
+                    <label>District</label>
+                    <select id="customerDistrict">
+                        <option value="">Select District</option>
+                        <option value="Kathmandu">Kathmandu</option>
+                        <option value="Lalitpur">Lalitpur</option>
+                        <option value="Bhaktapur">Bhaktapur</option>
+                        <option value="Dhading">Dhading</option>
+                        <option value="Chitwan">Chitwan</option>
+                        <option value="Pokhara">Pokhara</option>
+                        <option value="Butwal">Butwal</option>
+                        <option value="Biratnagar">Biratnagar</option>
+                        <option value="Birgunj">Birgunj</option>
+                        <option value="Nepalgunj">Nepalgunj</option>
+                        <option value="Dhangadhi">Dhangadhi</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===== LOCATION ===== -->
+        <div class="section">
+            <h2>📍 Live Location</h2>
+            <div class="location-section">
+                <div class="location-status" id="locationStatus">
+                    📍 Click below to share your live location
+                </div>
+                <button class="btn-secondary" id="locationBtn" onclick="getLocation()">
+                    📍 Share Location
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== PLACE ORDER ===== -->
+        <button class="btn-primary" id="placeOrderBtn" onclick="placeOrder()">
+            <span class="btn-text">📨 Place Order via WhatsApp</span>
+            <span class="spinner"></span>
+        </button>
+
+    </main>
+
+    <!-- ===== COUNTDOWN OVERLAY ===== -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-box">
+            <span class="emoji">📨</span>
+            <h2>Opening WhatsApp</h2>
+            <p>Redirecting to WhatsApp in...</p>
+            <div class="number" id="countdownNumber">3</div>
+            <button class="cancel-btn" onclick="cancelOrder()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== FIREBASE + ALL JAVASCRIPT (INTERNAL) ===== -->
+    <!-- ============================================================ -->
+    <script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        // ============================================================
+        // FIREBASE IMPORTS
+        // ============================================================
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, onAuthStateChanged } from 'firebase/auth';
+        import {
+            getFirestore,
+            collection,
+            doc,
+            getDoc,
+            getDocs,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            query,
+            where,
+            serverTimestamp,
+            runTransaction,
+            increment,
+            writeBatch
+        } from 'firebase/firestore';
+
+        // ============================================================
+        // FIREBASE CONFIG
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJLnUB8XnXWPEtSRAMuQr9ASmD16HLIJc",
+            authDomain: "bishalshrestha17-de676.firebaseapp.com",
+            projectId: "bishalshrestha17-de676",
+            storageBucket: "bishalshrestha17-de676.firebasestorage.app",
+            messagingSenderId: "631628771230",
+            appId: "1:631628771230:web:389c6430535f6a46b6708f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let shopId = null;
+        let cartItems = [];
+        let shopData = null;
+        let userData = null;
+        let locationCoords = null;
+        let isOrderPlacing = false;
+        let countdownTimer = null;
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const profileAvatar = document.getElementById('profileAvatar');
+        const summaryItems = document.getElementById('summaryItems');
+        const summaryTotal = document.getElementById('summaryTotal');
+        const summaryShopName = document.getElementById('summaryShopName');
+        const locationStatus = document.getElementById('locationStatus');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNumber = document.getElementById('countdownNumber');
+
+        // Form fields
+        const customerName = document.getElementById('customerName');
+        const customerEmail = document.getElementById('customerEmail');
+        const customerPhone = document.getElementById('customerPhone');
+        const customerAddress = document.getElementById('customerAddress');
+        const customerDistrict = document.getElementById('customerDistrict');
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        window.showToast = showToast;
+
+        // ============================================================
+        // GET SHOP ID FROM URL
+        // ============================================================
+        function getShopIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('shopId') || sessionStorage.getItem('checkoutShopId');
+        }
+
+        // ============================================================
+        // LOAD CHECKOUT DATA
+        // ============================================================
+        async function loadCheckoutData() {
+            shopId = getShopIdFromUrl();
+            if (!shopId) {
+                showToast('No shop selected for checkout', 'error');
+                window.location.href = 'cart.html';
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                showToast('Please login to checkout', 'error');
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            try {
+                // Load user data
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                    customerName.value = userData.name || '';
+                    customerEmail.value = userData.email || '';
+                    customerPhone.value = userData.phone || '';
+                    if (userData.deliveryAddresses && userData.deliveryAddresses.length > 0) {
+                        customerAddress.value = userData.deliveryAddresses[0].address || '';
+                        customerDistrict.value = userData.deliveryAddresses[0].district || '';
+                    }
+                }
+
+                // Load shop data
+                const shopDoc = await getDoc(doc(db, 'shops', shopId));
+                if (shopDoc.exists()) {
+                    shopData = shopDoc.data();
+                    summaryShopName.textContent = `🏪 ${shopData.shopName || 'Shop'}`;
+                } else {
+                    showToast('Shop not found', 'error');
+                    window.location.href = 'cart.html';
+                    return;
+                }
+
+                // Load cart items for this shop
+                const cartDoc = await getDoc(doc(db, 'cart', user.uid));
+                if (cartDoc.exists()) {
+                    const allItems = cartDoc.data().items || [];
+                    cartItems = allItems.filter(item => (item.shopId || '') === shopId);
+                }
+
+                if (cartItems.length === 0) {
+                    showToast('No items in cart for this shop', 'error');
+                    window.location.href = 'cart.html';
+                    return;
+                }
+
+                renderSummary();
+
+            } catch (error) {
+                console.error('Error loading checkout data:', error);
+                showToast('Failed to load checkout data', 'error');
+            }
+        }
+
+        // ============================================================
+        // RENDER SUMMARY
+        // ============================================================
+        function renderSummary() {
+            const total = cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 0), 0);
+            
+            summaryItems.innerHTML = cartItems.map(item => `
+                <div class="order-summary-item">
+                    <span class="name">${item.productName || 'Product'}</span>
+                    <span class="qty">×${item.qty || 0}</span>
+                    <span class="price">Rs. ${((item.price || 0) * (item.qty || 0)).toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            summaryTotal.textContent = `Rs. ${total.toLocaleString()}`;
+        }
+
+        // ============================================================
+        // GET LOCATION
+        // ============================================================
+        window.getLocation = function() {
+            const btn = document.getElementById('locationBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Getting...';
+            locationStatus.textContent = '📍 Getting your location...';
+            locationStatus.className = 'location-status';
+
+            if (!navigator.geolocation) {
+                locationStatus.textContent = '❌ Geolocation not supported by your browser';
+                locationStatus.className = 'location-status error';
+                btn.disabled = false;
+                btn.textContent = '📍 Share Location';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    locationCoords = {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    };
+                    locationStatus.textContent = `✅ Location captured: ${locationCoords.lat.toFixed(6)}, ${locationCoords.lng.toFixed(6)}`;
+                    locationStatus.className = 'location-status success';
+                    btn.disabled = false;
+                    btn.textContent = '📍 Update Location';
+                    showToast('Location captured! ✅', 'success');
+                },
+                (error) => {
+                    let msg = '❌ Location denied. Please type your address manually.';
+                    if (error.code === 1) {
+                        msg = '❌ Location denied. Please type your address manually.';
+                    } else if (error.code === 2) {
+                        msg = '❌ Location unavailable. Please type your address manually.';
+                    } else if (error.code === 3) {
+                        msg = '❌ Location timeout. Please type your address manually.';
+                    }
+                    locationStatus.textContent = msg;
+                    locationStatus.className = 'location-status error';
+                    btn.disabled = false;
+                    btn.textContent = '📍 Share Location';
+                },
+                { timeout: 10000, enableHighAccuracy: true }
+            );
+        };
+
+        // ============================================================
+        // GENERATE ORDER ID
+        // ============================================================
+        function generateOrderId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let id = 'ORD-';
+            for (let i = 0; i < 8; i++) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return id;
+        }
+
+        // ============================================================
+        // BUILD WHATSAPP MESSAGE
+        // ============================================================
+        function buildWhatsAppMessage(orderId, customer, items, total, location) {
+            const itemsList = items.map(item => 
+                `• ${item.productName} x${item.qty} = Rs.${(item.price || 0) * (item.qty || 0)}`
+            ).join('\n');
+
+            const mapsLink = location && location.lat && location.lng 
+                ? `https://maps.google.com/?q=${location.lat},${location.lng}` 
+                : customer.address || 'Address not provided';
+
+            return `🛍️ *New Order - Simha*\n\n` +
+                   `📋 Order ID: ${orderId}\n` +
+                   `👤 Customer: ${customer.name}\n` +
+                   `📞 Phone: ${customer.phone}\n` +
+                   `📧 Email: ${customer.email}\n` +
+                   `📍 Location: ${mapsLink}\n` +
+                   `🏠 Address: ${customer.address || 'N/A'}\n\n` +
+                   `📦 *Items:*\n${itemsList}\n\n` +
+                   `💰 *Total: Rs.${total}*\n\n` +
+                   `Thank you for shopping on Simha! 🙏`;
+        }
+
+        // ============================================================
+        // PLACE ORDER
+        // ============================================================
+        window.placeOrder = async function() {
+            if (isOrderPlacing) return;
+
+            // Validate form
+            const name = customerName.value.trim();
+            const email = customerEmail.value.trim();
+            const phone = customerPhone.value.trim();
+            const address = customerAddress.value.trim();
+
+            if (!name || !email || !phone || !address) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            if (!shopData || !shopData.whatsappNumber) {
+                showToast('Shop WhatsApp number not available', 'error');
+                return;
+            }
+
+            isOrderPlacing = true;
+            placeOrderBtn.classList.add('loading');
+            placeOrderBtn.disabled = true;
+
+            try {
+                const user = auth.currentUser;
+                const orderId = generateOrderId();
+                const total = cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 0), 0);
+
+                // Create order in Firestore
+                const orderData = {
+                    orderId: orderId,
+                    customerId: user.uid,
+                    customerName: name,
+                    customerEmail: email,
+                    customerPhone: phone,
+                    customerLocation: locationCoords || null,
+                    deliveryAddress: address,
+                    district: customerDistrict.value || '',
+                    shopId: shopId,
+                    shopName: shopData.shopName || 'Shop',
+                    shopWhatsapp: shopData.whatsappNumber,
+                    items: cartItems.map(item => ({
+                        productId: item.productId,
+                        productName: item.productName,
+                        price: item.price,
+                        qty: item.qty,
+                        unit: item.unit || '',
+                        imageURL: item.imageURL || ''
+                    })),
+                    subtotal: total,
+                    deliveryFee: 0,
+                    totalAmount: total,
+                    status: 'pending',
+                    paymentMethod: 'whatsapp',
+                    paymentStatus: 'pending',
+                    whatsappSent: true,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                };
+
+                await setDoc(doc(db, 'orders', orderId), orderData);
+
+                // Update stock using transaction
+                const batch = writeBatch(db);
+                for (const item of cartItems) {
+                    const productRef = doc(db, 'products', item.productId);
+                    batch.update(productRef, {
+                        stock: increment(-item.qty),
+                        sold: increment(item.qty)
+                    });
+                }
+                await batch.commit();
+
+                // Clear cart items for this shop
+                const cartRef = doc(db, 'cart', user.uid);
+                const cartDoc = await getDoc(cartRef);
+                if (cartDoc.exists()) {
+                    let allItems = cartDoc.data().items || [];
+                    allItems = allItems.filter(item => (item.shopId || '') !== shopId);
+                    await updateDoc(cartRef, { 
+                        items: allItems,
+                        updatedAt: serverTimestamp()
+                    });
+                }
+
+                // Build WhatsApp message
+                const customerInfo = { name, email, phone, address };
+                const message = buildWhatsAppMessage(orderId, customerInfo, cartItems, total, locationCoords);
+                const whatsappUrl = `https://wa.me/977${shopData.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+
+                // Show countdown
+                showCountdown(whatsappUrl);
+
+                showToast('Order placed! Redirecting to WhatsApp...', 'success');
+
+            } catch (error) {
+                console.error('Error placing order:', error);
+                showToast('Failed to place order: ' + error.message, 'error');
+                isOrderPlacing = false;
+                placeOrderBtn.classList.remove('loading');
+                placeOrderBtn.disabled = false;
+            }
+        };
+
+        // ============================================================
+        // SHOW COUNTDOWN
+        // ============================================================
+        function showCountdown(url) {
+            countdownOverlay.classList.add('show');
+            let count = 3;
+            countdownNumber.textContent = count;
+
+            countdownTimer = setInterval(() => {
+                count--;
+                if (count <= 0) {
+                    clearInterval(countdownTimer);
+                    countdownOverlay.classList.remove('show');
+                    // Open WhatsApp
+                    window.open(url, '_blank');
+                    // Redirect to orders page after delay
+                    setTimeout(() => {
+                        window.location.href = 'orders.html';
+                    }, 2000);
+                } else {
+                    countdownNumber.textContent = count;
+                }
+            }, 1000);
+        }
+
+        // ============================================================
+        // CANCEL ORDER
+        // ============================================================
+        window.cancelOrder = function() {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            countdownOverlay.classList.remove('show');
+            isOrderPlacing = false;
+            placeOrderBtn.classList.remove('loading');
+            placeOrderBtn.disabled = false;
+            showToast('Order cancelled', 'warning');
+        };
+
+        // ============================================================
+        // PROFILE AVATAR
+        // ============================================================
+        function updateProfileAvatar(user) {
+            if (user) {
+                const name = user.displayName || user.email || 'User';
+                const initial = name.charAt(0).toUpperCase();
+                profileAvatar.textContent = initial;
+                profileAvatar.style.background = '#000';
+                profileAvatar.style.color = '#fff';
+                profileAvatar.style.border = '2px solid #000';
+                if (user.photoURL) {
+                    profileAvatar.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+                }
+            } else {
+                profileAvatar.textContent = '👤';
+                profileAvatar.style.background = 'transparent';
+                profileAvatar.style.color = '#000';
+                profileAvatar.style.border = '2px solid #e0e0e0';
+                profileAvatar.innerHTML = '👤';
+            }
+        }
+
+        // ============================================================
+        // AUTH STATE
+        // ============================================================
+        onAuthStateChanged(auth, (user) => {
+            updateProfileAvatar(user);
+            if (user) {
+                loadCheckoutData();
+            } else {
+                window.location.href = 'auth.html';
+            }
+        });
+
+        // ============================================================
+        // GLOBAL FUNCTIONS
+        // ============================================================
+        window.getLocation = window.getLocation;
+        window.placeOrder = window.placeOrder;
+        window.cancelOrder = window.cancelOrder;
+        window.showToast = showToast;
+
+        console.log('🚀 Checkout Page loaded with WhatsApp integration');
+    </script>
+</body>
+</html>

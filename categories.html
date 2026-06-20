@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Categories - Simha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            color: #000000;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+            font-size: inherit;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 16px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .navbar .logo span {
+            font-size: 24px;
+        }
+        .navbar .logo .sub {
+            font-weight: 400;
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-left: 4px;
+        }
+        .navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar .nav-actions .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .navbar .nav-actions .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            object-fit: cover;
+        }
+        .navbar .nav-actions .profile-avatar:hover {
+            border-color: #000;
+        }
+        .navbar .nav-actions .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ===== HEADER ===== */
+        .page-header {
+            margin: 16px 0 8px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+        .page-header p {
+            color: #888;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        /* ===== SEARCH BAR ===== */
+        .search-bar {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #e0e0e0;
+            transition: border-color 0.2s;
+            margin: 12px 0 16px;
+        }
+        .search-bar:focus-within {
+            border-color: #000;
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            color: #000;
+            font-family: 'Inter', sans-serif;
+        }
+        .search-bar input::placeholder {
+            color: #999;
+        }
+        .search-bar .search-icon {
+            color: #999;
+            font-size: 18px;
+        }
+        .search-bar .clear-btn {
+            color: #999;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+        }
+        .search-bar .clear-btn.show {
+            display: block;
+        }
+
+        /* ===== RECENTLY VIEWED ===== */
+        .recent-section {
+            margin-bottom: 16px;
+        }
+        .recent-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .recent-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .recent-pill {
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .recent-pill:hover {
+            border-color: #000;
+            background: #fff;
+        }
+
+        /* ===== CATEGORY GRID ===== */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 8px 0 20px;
+        }
+        .category-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            padding: 24px 16px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .category-card .emoji {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .category-card .name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .category-card .count {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+        .category-card .new-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #000;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 50px;
+        }
+        .category-card .color-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        /* ===== FEATURED CATEGORY BANNER ===== */
+        .featured-banner {
+            background: #000;
+            color: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .featured-banner:hover {
+            transform: scale(1.01);
+        }
+        .featured-banner .content .emoji {
+            font-size: 28px;
+            display: block;
+        }
+        .featured-banner .content .title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .featured-banner .content .sub {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        .featured-banner .arrow {
+            font-size: 28px;
+            opacity: 0.6;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            grid-column: 1 / -1;
+        }
+        .empty-state .emoji {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .empty-state h3 {
+            color: #000;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+        }
+        .toast {
+            background: #000;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            pointer-events: auto;
+            animation: slideUp 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .toast.success { background: #000; }
+        .toast.error { background: #cc0000; }
+        .toast.warning { background: #cc8800; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: none;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            z-index: 99;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: #888;
+            transition: color 0.2s;
+            cursor: pointer;
+            gap: 2px;
+            background: none;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        .bottom-nav .nav-item .icon {
+            font-size: 22px;
+        }
+        .bottom-nav .nav-item.active {
+            color: #000;
+        }
+        .bottom-nav .nav-item .badge {
+            position: absolute;
+            top: -2px;
+            right: -8px;
+            background: #cc0000;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .bottom-nav .nav-item .badge.show {
+            display: flex;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            body { padding-bottom: 0; }
+            .bottom-nav { display: none !important; }
+            .category-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .category-grid { grid-template-columns: repeat(5, 1fr); }
+            .container { padding: 0 32px; }
+        }
+        @media (max-width: 767px) {
+            .bottom-nav { display: flex; }
+            .category-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .category-card { padding: 16px 12px; }
+            .category-card .emoji { font-size: 24px; }
+            .featured-banner { padding: 16px 18px; }
+            .featured-banner .content .title { font-size: 16px; }
+        }
+        @media (max-width: 400px) {
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="logo">
+            <span>🦁</span>
+            Simha
+            <span class="sub">Nepal</span>
+        </div>
+        <div class="nav-actions">
+            <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+            <div class="profile-avatar" id="profileAvatar" onclick="window.location.href='profile.html'">👤</div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="container">
+
+        <!-- ===== HEADER ===== -->
+        <div class="page-header">
+            <h1>📂 Categories</h1>
+            <p id="categoryCount">Discover shops across all categories</p>
+        </div>
+
+        <!-- ===== SEARCH BAR ===== -->
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search categories..." onkeyup="filterCategories(this.value)">
+            <span class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</span>
+        </div>
+
+        <!-- ===== RECENTLY VIEWED ===== -->
+        <div class="recent-section" id="recentSection" style="display:none;">
+            <h3>🔄 Recently Viewed</h3>
+            <div class="recent-pills" id="recentPills"></div>
+        </div>
+
+        <!-- ===== FEATURED BANNER ===== -->
+        <div class="featured-banner" id="featuredBanner" style="display:none;" onclick="navigateToCategory()">
+            <div class="content">
+                <span class="emoji">🔥</span>
+                <div class="title" id="featuredTitle">Featured Category</div>
+                <div class="sub" id="featuredSub">Discover amazing products</div>
+            </div>
+            <span class="arrow">→</span>
+        </div>
+
+        <!-- ===== CATEGORY GRID ===== -->
+        <div class="category-grid" id="categoryGrid">
+            <!-- Loading skeletons -->
+            <div class="skeleton" style="height:120px;border-radius:12px;"></div>
+            <div class="skeleton" style="height:120px;border-radius:12px;"></div>
+            <div class="skeleton" style="height:120px;border-radius:12px;"></div>
+            <div class="skeleton" style="height:120px;border-radius:12px;"></div>
+            <div class="skeleton" style="height:120px;border-radius:12px;"></div>
+            <div class="skeleton" style="height:120px;border-radius:12px;"></div>
+        </div>
+
+    </main>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='index.html'">
+            <span class="icon">🏠</span> Home
+        </button>
+        <button class="nav-item" onclick="window.location.href='shop-listing.html'">
+            <span class="icon">🏪</span> Shops
+        </button>
+        <button class="nav-item active" onclick="window.location.href='categories.html'">
+            <span class="icon">📂</span> Categories
+        </button>
+        <button class="nav-item" onclick="window.location.href='orders.html'">
+            <span class="icon">📋</span> Orders
+        </button>
+        <button class="nav-item" onclick="window.location.href='profile.html'">
+            <span class="icon">👤</span> Profile
+        </button>
+    </nav>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== FIREBASE + JAVASCRIPT ===== -->
+    <!-- ============================================================ -->
+    <script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        // ============================================================
+        // FIREBASE IMPORTS
+        // ============================================================
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, onAuthStateChanged } from 'firebase/auth';
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            query,
+            where,
+            orderBy,
+            limit
+        } from 'firebase/firestore';
+
+        // ============================================================
+        // FIREBASE CONFIG
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJLnUB8XnXWPEtSRAMuQr9ASmD16HLIJc",
+            authDomain: "bishalshrestha17-de676.firebaseapp.com",
+            projectId: "bishalshrestha17-de676",
+            storageBucket: "bishalshrestha17-de676.firebasestorage.app",
+            messagingSenderId: "631628771230",
+            appId: "1:631628771230:web:389c6430535f6a46b6708f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // ============================================================
+        // CATEGORIES DATA
+        // ============================================================
+        const categories = [
+            { name: 'Grocery Stores', emoji: '🛒', color: '#2e7d32' },
+            { name: 'Mobile Shops', emoji: '📱', color: '#1565c0' },
+            { name: 'Clothing Stores', emoji: '👕', color: '#e65100' },
+            { name: 'Electronics Shops', emoji: '💻', color: '#00695c' },
+            { name: 'Restaurants & Food', emoji: '🍽️', color: '#bf360c' },
+            { name: 'Hardware Stores', emoji: '🔧', color: '#4e342e' },
+            { name: 'Pharmacy', emoji: '💊', color: '#00838f' },
+            { name: 'Agriculture Stores', emoji: '🌱', color: '#33691e' },
+            { name: 'Beauty & Saloon', emoji: '💄', color: '#880e4f' },
+            { name: 'Other', emoji: '📦', color: '#424242' }
+        ];
+
+        // Category colors mapping for cards
+        const categoryColors = {
+            'Grocery Stores': '#2e7d32',
+            'Mobile Shops': '#1565c0',
+            'Clothing Stores': '#e65100',
+            'Electronics Shops': '#00695c',
+            'Restaurants & Food': '#bf360c',
+            'Hardware Stores': '#4e342e',
+            'Pharmacy': '#00838f',
+            'Agriculture Stores': '#33691e',
+            'Beauty & Saloon': '#880e4f',
+            'Other': '#424242'
+        };
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let allCategories = [];
+        let categoryCounts = {};
+        let recentCategories = [];
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const categoryGrid = document.getElementById('categoryGrid');
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearBtn');
+        const categoryCount = document.getElementById('categoryCount');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const recentSection = document.getElementById('recentSection');
+        const recentPills = document.getElementById('recentPills');
+        const featuredBanner = document.getElementById('featuredBanner');
+        const featuredTitle = document.getElementById('featuredTitle');
+        const featuredSub = document.getElementById('featuredSub');
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        window.showToast = showToast;
+
+        // ============================================================
+        // LOAD CATEGORY COUNTS
+        // ============================================================
+        async function loadCategoryCounts() {
+            try {
+                const shopsSnap = await getDocs(collection(db, 'shops'));
+                const shops = shopsSnap.docs.map(doc => doc.data());
+
+                // Count shops per category
+                const counts = {};
+                categories.forEach(cat => {
+                    counts[cat.name] = shops.filter(s => s.category === cat.name && s.isActive !== false).length;
+                });
+
+                categoryCounts = counts;
+                renderCategories();
+                updateRecentCategories();
+
+            } catch (error) {
+                console.error('Error loading category counts:', error);
+                // Fallback: show categories with 0 counts
+                categories.forEach(cat => {
+                    categoryCounts[cat.name] = 0;
+                });
+                renderCategories();
+                showToast('Failed to load category counts', 'error');
+            }
+        }
+
+        // ============================================================
+        // RENDER CATEGORIES
+        // ============================================================
+        function renderCategories() {
+            const searchQuery = searchInput.value.toLowerCase().trim();
+
+            let filtered = categories.filter(cat => 
+                cat.name.toLowerCase().includes(searchQuery)
+            );
+
+            // Sort by shop count (most first)
+            filtered.sort((a, b) => (categoryCounts[b.name] || 0) - (categoryCounts[a.name] || 0));
+
+            if (filtered.length === 0) {
+                categoryGrid.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">🔍</span>
+                        <h3>No categories found</h3>
+                        <p>Try a different search term</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Find max count for "new" badge detection (categories added in last 7 days)
+            // For demo, we'll mark categories with shops as "new"
+
+            categoryGrid.innerHTML = filtered.map(cat => {
+                const count = categoryCounts[cat.name] || 0;
+                const color = categoryColors[cat.name] || '#424242';
+                const isNew = count > 0 && false; // Would check createdAt in real scenario
+
+                return `
+                    <div class="category-card" onclick="navigateToCategory('${cat.name}')">
+                        <div class="color-bar" style="background:${color};"></div>
+                        <span class="emoji">${cat.emoji}</span>
+                        <div class="name">${cat.name}</div>
+                        <div class="count">${count} ${count === 1 ? 'shop' : 'shops'}</div>
+                        ${isNew ? '<span class="new-badge">New</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // Update count
+            const totalShops = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
+            categoryCount.textContent = `Discover ${totalShops} shops across ${categories.length} categories`;
+
+            // Show featured banner (highest category)
+            showFeaturedBanner();
+        }
+
+        // ============================================================
+        // SHOW FEATURED BANNER
+        // ============================================================
+        function showFeaturedBanner() {
+            const sorted = categories.filter(c => (categoryCounts[c.name] || 0) > 0);
+            if (sorted.length === 0) {
+                featuredBanner.style.display = 'none';
+                return;
+            }
+
+            const top = sorted.reduce((a, b) => 
+                (categoryCounts[a.name] || 0) > (categoryCounts[b.name] || 0) ? a : b
+            );
+
+            featuredTitle.textContent = `${top.emoji} ${top.name}`;
+            featuredSub.textContent = `${categoryCounts[top.name] || 0} shops • Shop now!`;
+            featuredBanner.style.display = 'flex';
+            featuredBanner.onclick = () => navigateToCategory(top.name);
+        }
+
+        // ============================================================
+        // NAVIGATE TO CATEGORY
+        // ============================================================
+        window.navigateToCategory = function(categoryName) {
+            if (!categoryName) {
+                // Find top category
+                const sorted = categories.filter(c => (categoryCounts[c.name] || 0) > 0);
+                if (sorted.length > 0) {
+                    categoryName = sorted.reduce((a, b) => 
+                        (categoryCounts[a.name] || 0) > (categoryCounts[b.name] || 0) ? a : b
+                    ).name;
+                } else {
+                    return;
+                }
+            }
+
+            // Save to recent
+            saveRecentCategory(categoryName);
+            
+            // Navigate to shop listing with category filter
+            window.location.href = `shop-listing.html?category=${encodeURIComponent(categoryName)}`;
+        };
+
+        // ============================================================
+        // SAVE RECENT CATEGORY
+        // ============================================================
+        function saveRecentCategory(categoryName) {
+            let recent = JSON.parse(localStorage.getItem('recentCategories') || '[]');
+            recent = recent.filter(c => c !== categoryName);
+            recent.unshift(categoryName);
+            if (recent.length > 5) recent.pop();
+            localStorage.setItem('recentCategories', JSON.stringify(recent));
+            updateRecentCategories();
+        }
+
+        // ============================================================
+        // UPDATE RECENT CATEGORIES
+        // ============================================================
+        function updateRecentCategories() {
+            const recent = JSON.parse(localStorage.getItem('recentCategories') || '[]');
+            if (recent.length === 0) {
+                recentSection.style.display = 'none';
+                return;
+            }
+
+            recentSection.style.display = 'block';
+            recentPills.innerHTML = recent.map(cat => `
+                <span class="recent-pill" onclick="navigateToCategory('${cat}')">
+                    ${cat}
+                </span>
+            `).join('');
+        }
+
+        // ============================================================
+        // FILTER CATEGORIES
+        // ============================================================
+        window.filterCategories = function(value) {
+            clearBtn.classList.toggle('show', value.length > 0);
+            renderCategories();
+        };
+
+        // ============================================================
+        // CLEAR SEARCH
+        // ============================================================
+        window.clearSearch = function() {
+            searchInput.value = '';
+            clearBtn.classList.remove('show');
+            renderCategories();
+        };
+
+        // ============================================================
+        // PROFILE AVATAR
+        // ============================================================
+        function updateProfileAvatar(user) {
+            if (user) {
+                const name = user.displayName || user.email || 'User';
+                const initial = name.charAt(0).toUpperCase();
+                profileAvatar.textContent = initial;
+                profileAvatar.style.background = '#000';
+                profileAvatar.style.color = '#fff';
+                profileAvatar.style.border = '2px solid #000';
+                if (user.photoURL) {
+                    profileAvatar.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+                }
+            } else {
+                profileAvatar.textContent = '👤';
+                profileAvatar.style.background = 'transparent';
+                profileAvatar.style.color = '#000';
+                profileAvatar.style.border = '2px solid #e0e0e0';
+                profileAvatar.innerHTML = '👤';
+            }
+        }
+
+        // ============================================================
+        // AUTH STATE
+        // ============================================================
+        onAuthStateChanged(auth, (user) => {
+            updateProfileAvatar(user);
+            if (!user) {
+                // Allow browsing without login
+                console.log('Guest user viewing categories');
+            }
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        loadCategoryCounts();
+
+        // ============================================================
+        // GLOBAL FUNCTIONS
+        // ============================================================
+        window.navigateToCategory = window.navigateToCategory;
+        window.filterCategories = window.filterCategories;
+        window.clearSearch = window.clearSearch;
+        window.showToast = showToast;
+
+        console.log('🚀 Categories Page loaded');
+    </script>
+</body>
+</html>

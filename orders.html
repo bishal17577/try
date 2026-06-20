@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Orders - Simha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            color: #000000;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            background: none;
+            font-size: inherit;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 16px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .navbar .logo span {
+            font-size: 24px;
+        }
+        .navbar .logo .sub {
+            font-weight: 400;
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-left: 4px;
+        }
+        .navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar .nav-actions .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .navbar .nav-actions .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            object-fit: cover;
+        }
+        .navbar .nav-actions .profile-avatar:hover {
+            border-color: #000;
+        }
+        .navbar .nav-actions .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ===== FILTER TABS ===== */
+        .filter-tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding: 12px 0;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 16px;
+        }
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .filter-tab {
+            flex-shrink: 0;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-tab:hover {
+            color: #000;
+            border-color: #e0e0e0;
+        }
+        .filter-tab.active {
+            color: #fff;
+            background: #000;
+            border-color: #000;
+        }
+        .filter-tab .count {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-left: 4px;
+        }
+
+        /* ===== ORDER CARD ===== */
+        .order-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .order-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        .order-card .order-header {
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .order-card .order-header .order-id {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .order-card .order-header .order-date {
+            font-size: 12px;
+            color: #888;
+        }
+        .order-card .order-header .order-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 50px;
+        }
+        .order-card .order-header .order-status.pending { background: #f0e000; color: #000; }
+        .order-card .order-header .order-status.confirmed { background: #000; color: #fff; }
+        .order-card .order-header .order-status.delivered { background: #000; color: #fff; }
+        .order-card .order-header .order-status.cancelled { background: #cc0000; color: #fff; }
+
+        .order-card .order-body {
+            padding: 14px 16px;
+            display: none;
+        }
+        .order-card .order-body.expanded {
+            display: block;
+        }
+
+        .order-card .order-body .order-shop {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .order-card .order-body .order-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .order-card .order-body .order-item:last-child {
+            border-bottom: none;
+        }
+        .order-card .order-body .order-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        .order-card .order-body .order-item .item-details {
+            flex: 1;
+        }
+        .order-card .order-body .order-item .item-details .name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .order-card .order-body .order-item .item-details .qty {
+            font-size: 12px;
+            color: #888;
+        }
+        .order-card .order-body .order-item .item-price {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .order-card .order-footer {
+            padding: 10px 16px;
+            background: #f8f8f8;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .order-card .order-footer .total {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .order-card .order-footer .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            padding: 8px 18px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover {
+            opacity: 0.8;
+        }
+        .btn-secondary {
+            padding: 8px 18px;
+            background: transparent;
+            color: #000;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-secondary:hover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+        .btn-whatsapp {
+            padding: 8px 18px;
+            background: #25D366;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-whatsapp:hover {
+            opacity: 0.8;
+        }
+
+        /* ===== TRACKING STEPPER ===== */
+        .tracking-stepper {
+            padding: 12px 0;
+        }
+        .tracking-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            position: relative;
+        }
+        .tracking-step .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            flex-shrink: 0;
+            border: 2px solid #e0e0e0;
+        }
+        .tracking-step .step-dot.active {
+            background: #000;
+            border-color: #000;
+        }
+        .tracking-step .step-dot.completed {
+            background: #000;
+            border-color: #000;
+        }
+        .tracking-step .step-line {
+            position: absolute;
+            left: 5px;
+            top: 24px;
+            width: 2px;
+            height: 16px;
+            background: #e0e0e0;
+        }
+        .tracking-step:last-child .step-line {
+            display: none;
+        }
+        .tracking-step .step-label {
+            font-size: 13px;
+        }
+        .tracking-step .step-label .step-date {
+            font-size: 11px;
+            color: #888;
+            display: block;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        .empty-state .emoji {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .empty-state h2 {
+            color: #000;
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+        }
+        .toast {
+            background: #000;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            pointer-events: auto;
+            animation: slideUp 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .toast.success { background: #000; }
+        .toast.error { background: #cc0000; }
+        .toast.warning { background: #cc8800; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: none;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            z-index: 99;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: #888;
+            transition: color 0.2s;
+            cursor: pointer;
+            gap: 2px;
+            background: none;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        .bottom-nav .nav-item .icon {
+            font-size: 22px;
+        }
+        .bottom-nav .nav-item.active {
+            color: #000;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: flex;
+            }
+            .order-card .order-header {
+                flex-wrap: wrap;
+            }
+            .order-card .order-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .order-card .order-footer .actions {
+                justify-content: center;
+            }
+            .filter-tabs {
+                gap: 6px;
+            }
+            .filter-tab {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="logo">
+            <span>🦁</span>
+            Simha
+            <span class="sub">Nepal</span>
+        </div>
+        <div class="nav-actions">
+            <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+            <div class="profile-avatar" id="profileAvatar" onclick="window.location.href='profile.html'">👤</div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="container">
+
+        <h1 style="font-size:24px;font-weight:800;margin:16px 0;">📋 My Orders</h1>
+
+        <!-- ===== FILTER TABS ===== -->
+        <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" data-filter="all" onclick="applyFilter('all')">
+                All <span class="count" id="countAll">0</span>
+            </button>
+            <button class="filter-tab" data-filter="pending" onclick="applyFilter('pending')">
+                Pending <span class="count" id="countPending">0</span>
+            </button>
+            <button class="filter-tab" data-filter="confirmed" onclick="applyFilter('confirmed')">
+                Confirmed <span class="count" id="countConfirmed">0</span>
+            </button>
+            <button class="filter-tab" data-filter="delivered" onclick="applyFilter('delivered')">
+                Delivered <span class="count" id="countDelivered">0</span>
+            </button>
+            <button class="filter-tab" data-filter="cancelled" onclick="applyFilter('cancelled')">
+                Cancelled <span class="count" id="countCancelled">0</span>
+            </button>
+        </div>
+
+        <!-- ===== ORDERS LIST ===== -->
+        <div id="ordersList">
+            <div class="empty-state">
+                <span class="emoji">📋</span>
+                <h2>No orders yet</h2>
+                <p>Start shopping and place your first order!</p>
+                <button class="btn-primary" onclick="window.location.href='shop-listing.html'">Browse Shops →</button>
+            </div>
+        </div>
+
+        <!-- ===== LOAD MORE ===== -->
+        <div style="text-align:center;padding:16px 0 24px;">
+            <button class="btn-primary" id="loadMoreBtn" onclick="loadMore()" style="display:none;">Load More</button>
+        </div>
+
+    </main>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='index.html'">
+            <span class="icon">🏠</span> Home
+        </button>
+        <button class="nav-item" onclick="window.location.href='shop-listing.html'">
+            <span class="icon">🏪</span> Shops
+        </button>
+        <button class="nav-item" onclick="window.location.href='cart.html'">
+            <span class="icon">🛒</span> Cart
+        </button>
+        <button class="nav-item active" onclick="window.location.href='orders.html'">
+            <span class="icon">📋</span> Orders
+        </button>
+        <button class="nav-item" onclick="window.location.href='profile.html'">
+            <span class="icon">👤</span> Profile
+        </button>
+    </nav>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== FIREBASE + JAVASCRIPT ===== -->
+    <!-- ============================================================ -->
+    <script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        // ============================================================
+        // FIREBASE IMPORTS
+        // ============================================================
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, onAuthStateChanged } from 'firebase/auth';
+        import {
+            getFirestore,
+            collection,
+            doc,
+            getDocs,
+            query,
+            where,
+            orderBy,
+            limit,
+            startAfter,
+            onSnapshot,
+            serverTimestamp
+        } from 'firebase/firestore';
+
+        // ============================================================
+        // FIREBASE CONFIG
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJLnUB8XnXWPEtSRAMuQr9ASmD16HLIJc",
+            authDomain: "bishalshrestha17-de676.firebaseapp.com",
+            projectId: "bishalshrestha17-de676",
+            storageBucket: "bishalshrestha17-de676.firebasestorage.app",
+            messagingSenderId: "631628771230",
+            appId: "1:631628771230:web:389c6430535f6a46b6708f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentFilter = 'all';
+        let lastDoc = null;
+        let hasMore = true;
+        let isLoading = false;
+        const PAGE_SIZE = 10;
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const ordersList = document.getElementById('ordersList');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const profileAvatar = document.getElementById('profileAvatar');
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        window.showToast = showToast;
+
+        // ============================================================
+        // LOAD ORDERS
+        // ============================================================
+        async function loadOrders() {
+            const user = auth.currentUser;
+            if (!user) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            try {
+                isLoading = true;
+                loadMoreBtn.style.display = 'none';
+
+                const q = query(
+                    collection(db, 'orders'),
+                    where('customerId', '==', user.uid),
+                    orderBy('createdAt', 'desc'),
+                    limit(PAGE_SIZE)
+                );
+
+                const snapshot = await getDocs(q);
+                const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+                hasMore = snapshot.docs.length === PAGE_SIZE;
+
+                allOrders = orders;
+                filteredOrders = orders;
+                renderOrders(orders);
+                updateCounts();
+                updateFilterCounts();
+
+                if (hasMore) {
+                    loadMoreBtn.style.display = 'inline-block';
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = 'Load More';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+
+                isLoading = false;
+
+                // Set up real-time listener
+                setupRealtimeListener();
+
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showToast('Failed to load orders', 'error');
+                isLoading = false;
+            }
+        }
+
+        // ============================================================
+        // REAL-TIME LISTENER
+        // ============================================================
+        function setupRealtimeListener() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const q = query(
+                collection(db, 'orders'),
+                where('customerId', '==', user.uid),
+                orderBy('createdAt', 'desc')
+            );
+
+            onSnapshot(q, (snapshot) => {
+                const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Only update if there are changes
+                if (orders.length !== allOrders.length) {
+                    allOrders = orders;
+                    applyFilter(currentFilter);
+                    updateCounts();
+                    updateFilterCounts();
+                }
+            }, (error) => {
+                console.error('Orders listener error:', error);
+            });
+        }
+
+        // ============================================================
+        // LOAD MORE
+        // ============================================================
+        window.loadMore = async function() {
+            if (isLoading || !hasMore || !lastDoc) return;
+
+            const user = auth.currentUser;
+            if (!user) return;
+
+            try {
+                isLoading = true;
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = 'Loading...';
+
+                const q = query(
+                    collection(db, 'orders'),
+                    where('customerId', '==', user.uid),
+                    orderBy('createdAt', 'desc'),
+                    startAfter(lastDoc),
+                    limit(PAGE_SIZE)
+                );
+
+                const snapshot = await getDocs(q);
+                const newOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+                hasMore = snapshot.docs.length === PAGE_SIZE;
+
+                allOrders = [...allOrders, ...newOrders];
+                applyFilter(currentFilter);
+                updateCounts();
+                updateFilterCounts();
+
+                if (hasMore) {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = 'Load More';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+
+                isLoading = false;
+
+            } catch (error) {
+                console.error('Error loading more orders:', error);
+                showToast('Failed to load more orders', 'error');
+                isLoading = false;
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.textContent = 'Load More';
+            }
+        };
+
+        // ============================================================
+        // APPLY FILTER
+        // ============================================================
+        window.applyFilter = function(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.filter === filter);
+            });
+
+            if (filter === 'all') {
+                filteredOrders = allOrders;
+            } else {
+                filteredOrders = allOrders.filter(order => order.status === filter);
+            }
+
+            renderOrders(filteredOrders);
+        };
+
+        // ============================================================
+        // RENDER ORDERS
+        // ============================================================
+        function renderOrders(orders) {
+            if (orders.length === 0) {
+                ordersList.innerHTML = `
+                    <div class="empty-state">
+                        <span class="emoji">📋</span>
+                        <h2>No orders found</h2>
+                        <p>${currentFilter === 'all' ? 'Start shopping and place your first order!' : `No ${currentFilter} orders`}</p>
+                        <button class="btn-primary" onclick="window.location.href='shop-listing.html'">Browse Shops →</button>
+                    </div>
+                `;
+                return;
+            }
+
+            ordersList.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-header" onclick="toggleOrder('${order.id}')">
+                        <div>
+                            <div class="order-id">${order.orderId || order.id}</div>
+                            <div class="order-date">${formatDate(order.createdAt)}</div>
+                        </div>
+                        <div>
+                            <span class="order-status ${order.status || 'pending'}">${(order.status || 'Pending').toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="order-body" id="orderBody_${order.id}">
+                        <div class="order-shop">🏪 ${order.shopName || 'Shop'}</div>
+                        ${order.items ? order.items.map(item => `
+                            <div class="order-item">
+                                <img src="${item.imageURL || 'https://picsum.photos/40/40'}" alt="${item.productName}" onerror="this.src='https://picsum.photos/40/40'">
+                                <div class="item-details">
+                                    <div class="name">${item.productName || 'Product'}</div>
+                                    <div class="qty">×${item.qty || 0} • ${item.unit || ''}</div>
+                                </div>
+                                <div class="item-price">Rs. ${((item.price || 0) * (item.qty || 0)).toLocaleString()}</div>
+                            </div>
+                        `).join('') : '<div style="padding:8px 0;color:#888;">No items</div>'}
+
+                        <!-- Tracking Stepper -->
+                        <div class="tracking-stepper">
+                            ${getTrackingSteps(order.status, order.createdAt, order.deliveredAt)}
+                        </div>
+                    </div>
+                    <div class="order-footer">
+                        <span class="total">Total: Rs. ${(order.totalAmount || 0).toLocaleString()}</span>
+                        <div class="actions">
+                            ${order.status === 'pending' ? `
+                                <button class="btn-secondary" onclick="reorder('${order.id}')">🔄 Reorder</button>
+                            ` : ''}
+                            ${order.shopWhatsapp ? `
+                                <button class="btn-whatsapp" onclick="contactShop('${order.shopWhatsapp}', '${order.orderId || order.id}')">💬 Contact Shop</button>
+                            ` : ''}
+                            <button class="btn-secondary" onclick="toggleOrder('${order.id}')">📄 Details</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // GET TRACKING STEPS
+        // ============================================================
+        function getTrackingSteps(status, createdAt, deliveredAt) {
+            const steps = [
+                { label: 'Order Placed', status: 'completed', date: createdAt },
+                { label: 'Confirmed', status: status === 'pending' ? 'active' : 'completed', date: status !== 'pending' ? createdAt : null },
+                { label: 'Delivered', status: status === 'delivered' ? 'completed' : status === 'confirmed' ? 'active' : 'inactive', date: deliveredAt || null }
+            ];
+
+            // Adjust for cancelled
+            if (status === 'cancelled') {
+                steps[1].status = 'inactive';
+                steps[2].status = 'inactive';
+            }
+
+            return steps.map((step, index) => `
+                <div class="tracking-step">
+                    <div class="step-dot ${step.status === 'completed' ? 'completed' : step.status === 'active' ? 'active' : ''}"></div>
+                    ${index < steps.length - 1 ? '<div class="step-line"></div>' : ''}
+                    <div class="step-label">
+                        ${step.label}
+                        ${step.date ? `<span class="step-date">${formatDate(step.date)}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // TOGGLE ORDER
+        // ============================================================
+        window.toggleOrder = function(orderId) {
+            const body = document.getElementById(`orderBody_${orderId}`);
+            if (body) {
+                body.classList.toggle('expanded');
+            }
+        };
+
+        // ============================================================
+        // REORDER
+        // ============================================================
+        window.reorder = async function(orderId) {
+            const order = allOrders.find(o => o.id === orderId || o.orderId === orderId);
+            if (!order || !order.items) {
+                showToast('No items to reorder', 'error');
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                showToast('Please login', 'error');
+                return;
+            }
+
+            try {
+                const cartRef = doc(db, 'cart', user.uid);
+                const cartDoc = await getDocs(query(collection(db, 'cart'), where('__name__', '==', user.uid)));
+                
+                let existingItems = [];
+                if (!cartDoc.empty) {
+                    existingItems = cartDoc.docs[0].data().items || [];
+                }
+
+                // Add items from order to cart
+                const newItems = [...existingItems];
+                for (const item of order.items) {
+                    const existingIndex = newItems.findIndex(i => i.productId === item.productId);
+                    if (existingIndex >= 0) {
+                        newItems[existingIndex].qty += item.qty || 0;
+                    } else {
+                        newItems.push({
+                            productId: item.productId,
+                            shopId: order.shopId,
+                            shopName: order.shopName || 'Shop',
+                            productName: item.productName,
+                            price: item.price,
+                            qty: item.qty || 0,
+                            unit: item.unit || '',
+                            imageURL: item.imageURL || ''
+                        });
+                    }
+                }
+
+                await updateDoc(cartRef, { items: newItems, updatedAt: serverTimestamp() });
+                showToast('Items added to cart! 🛒', 'success');
+                window.location.href = 'cart.html';
+
+            } catch (error) {
+                console.error('Error reordering:', error);
+                showToast('Failed to reorder', 'error');
+            }
+        };
+
+        // ============================================================
+        // CONTACT SHOP
+        // ============================================================
+        window.contactShop = function(whatsapp, orderId) {
+            const message = `Hi, I have an order (${orderId}) on Simha. Can you help me with it?`;
+            const url = `https://wa.me/977${whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        };
+
+        // ============================================================
+        // FORMAT DATE
+        // ============================================================
+        function formatDate(timestamp) {
+            if (!timestamp) return 'N/A';
+            let date;
+            if (timestamp.toDate) {
+                date = timestamp.toDate();
+            } else if (timestamp.seconds) {
+                date = new Date(timestamp.seconds * 1000);
+            } else {
+                date = new Date(timestamp);
+            }
+            if (isNaN(date.getTime())) return 'N/A';
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // ============================================================
+        // UPDATE COUNTS
+        // ============================================================
+        function updateCounts() {
+            const total = allOrders.length;
+            document.getElementById('countAll').textContent = total;
+        }
+
+        function updateFilterCounts() {
+            const statuses = ['pending', 'confirmed', 'delivered', 'cancelled'];
+            statuses.forEach(status => {
+                const count = allOrders.filter(o => o.status === status).length;
+                const el = document.getElementById(`count${status.charAt(0).toUpperCase() + status.slice(1)}`);
+                if (el) el.textContent = count;
+            });
+        }
+
+        // ============================================================
+        // PROFILE AVATAR
+        // ============================================================
+        function updateProfileAvatar(user) {
+            if (user) {
+                const name = user.displayName || user.email || 'User';
+                const initial = name.charAt(0).toUpperCase();
+                profileAvatar.textContent = initial;
+                profileAvatar.style.background = '#000';
+                profileAvatar.style.color = '#fff';
+                profileAvatar.style.border = '2px solid #000';
+                if (user.photoURL) {
+                    profileAvatar.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+                }
+            } else {
+                profileAvatar.textContent = '👤';
+                profileAvatar.style.background = 'transparent';
+                profileAvatar.style.color = '#000';
+                profileAvatar.style.border = '2px solid #e0e0e0';
+                profileAvatar.innerHTML = '👤';
+            }
+        }
+
+        // ============================================================
+        // AUTH STATE
+        // ============================================================
+        onAuthStateChanged(auth, (user) => {
+            updateProfileAvatar(user);
+            if (user) {
+                loadOrders();
+            } else {
+                window.location.href = 'auth.html';
+            }
+        });
+
+        // ============================================================
+        // GLOBAL FUNCTIONS
+        // ============================================================
+        window.applyFilter = window.applyFilter;
+        window.loadMore = window.loadMore;
+        window.toggleOrder = window.toggleOrder;
+        window.reorder = window.reorder;
+        window.contactShop = window.contactShop;
+        window.showToast = showToast;
+
+        console.log('🚀 Orders Page loaded');
+    </script>
+</body>
+</html>

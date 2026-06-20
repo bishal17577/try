@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - SIMHA</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦁</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --navy: #071739; --gold: #D4A017; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .navbar { background: var(--navy); position: sticky; top: 0; z-index: 100; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- NAVBAR -->
+    <nav class="navbar px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-extrabold text-white"><span>🦁</span> SIMHA</a>
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="text-white text-sm"><i class="fas fa-home"></i></a>
+                <a href="cart.html" class="text-white text-sm"><i class="fas fa-shopping-cart"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PRODUCT DETAIL -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- IMAGE -->
+            <div class="bg-white p-8 rounded-lg">
+                <div class="text-9xl flex items-center justify-center h-96 bg-gray-100 rounded-lg">📱</div>
+                <div class="flex gap-2 mt-4">
+                    <button class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-3xl hover:ring-2 ring-gold">📱</button>
+                    <button class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-3xl hover:ring-2 ring-gold">📱</button>
+                    <button class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-3xl hover:ring-2 ring-gold">📱</button>
+                </div>
+            </div>
+
+            <!-- DETAILS -->
+            <div class="bg-white p-6 rounded-lg">
+                <a href="shop-detail.html" class="text-gold font-semibold text-sm mb-2 inline-block hover:underline">Bishal Mobile Center</a>
+                <h1 class="text-3xl font-bold mb-2">iPhone 14 Pro Max</h1>
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-gold">★★★★★</span>
+                    <span class="font-semibold">4.8</span>
+                    <span class="text-gray-500 text-sm">(250 reviews)</span>
+                </div>
+
+                <div class="mb-6">
+                    <span class="text-3xl font-bold text-gold">Rs. 104,999</span>
+                    <span class="text-gray-500 line-through ml-3">Rs. 124,999</span>
+                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-sm ml-3 font-semibold">20% OFF</span>
+                </div>
+
+                <div class="mb-6 pb-6 border-b">
+                    <h3 class="font-bold mb-3">Description</h3>
+                    <p class="text-gray-600">Premium smartphone with advanced camera system, A16 chip, and all-day battery life. Brand new with original warranty.</p>
+                </div>
+
+                <div class="mb-6 pb-6 border-b">
+                    <h3 class="font-bold mb-3">Specifications</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><span class="font-semibold">Color:</span> Space Black</li>
+                        <li><span class="font-semibold">Storage:</span> 256GB</li>
+                        <li><span class="font-semibold">Warranty:</span> 1 Year</li>
+                        <li><span class="font-semibold">Delivery:</span> 2-3 days</li>
+                    </ul>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="font-bold mb-3">Quantity</h3>
+                    <div class="flex items-center gap-3">
+                        <button class="border px-3 py-2 rounded">-</button>
+                        <span class="text-lg font-bold">1</span>
+                        <button class="border px-3 py-2 rounded">+</button>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button class="flex-1 bg-gold text-white py-3 rounded-lg font-bold hover:bg-yellow-700"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                    <button class="px-6 py-3 border-2 border-gold rounded-lg text-gold font-bold hover:bg-gold hover:text-white"><i class="fas fa-heart"></i></button>
+                </div>
+
+                <div class="mt-6 pt-6 border-t">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-truck text-gold text-xl"></i>
+                        <div>
+                            <h4 class="font-bold">Free Delivery</h4>
+                            <p class="text-sm text-gray-600">On orders above Rs. 50,000</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-shield-alt text-gold text-xl"></i>
+                        <div>
+                            <h4 class="font-bold">Secure Payment</h4>
+                            <p class="text-sm text-gray-600">100% encrypted transactions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
