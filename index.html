@@ -71,7 +71,7 @@
             height: 100%;
             background: var(--accent-2);
             width: 0%;
-            transition: width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            transition: width 0.4s cubic-bezier(0.25,0.1,0.25,1);
             border-radius: 0 2px 2px 0;
         }
         #loadingFill.active { width: 70%; }
@@ -99,7 +99,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.96);
+            background: rgba(255,255,255,0.96);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             height: var(--nav-h);
@@ -643,7 +643,86 @@
             .shop-thumb { height: 110px; }
         }
 
-        /* ── PRODUCT GRIDS ── */
+        /* ── SALES SLIDER (HORIZONTAL SCROLL) ── */
+        .sales-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 2px 0 10px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .sales-scroll::-webkit-scrollbar { display: none; }
+
+        .sale-card {
+            flex-shrink: 0;
+            width: 160px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: var(--shadow-xs);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .sale-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+        .sale-card:active { transform: scale(0.97); }
+        .sale-card .sale-img {
+            height: 100px;
+            overflow: hidden;
+            background: #e9ebee;
+            position: relative;
+        }
+        .sale-card .sale-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sale-card .sale-body { padding: 6px 8px 8px; }
+        .sale-card .sale-body .s-name {
+            font-weight: 600;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sale-card .sale-body .s-price {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-2);
+        }
+        .sale-card .sale-body .s-orig {
+            font-size: 9px;
+            color: var(--ink-2);
+            text-decoration: line-through;
+            margin-left: 4px;
+        }
+        .sale-card .sale-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: var(--accent-2);
+            color: #fff;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            z-index: 2;
+        }
+
+        @media (min-width: 768px) {
+            .sale-card { width: 180px; }
+            .sale-card .sale-img { height: 120px; }
+        }
+        @media (min-width: 1024px) {
+            .sale-card { width: 200px; }
+            .sale-card .sale-img { height: 130px; }
+        }
+
+        /* ── PRODUCT GRID (MIXED) ── */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -672,7 +751,6 @@
             background: #e9ebee;
             width: 100%;
             padding-bottom: 100%;
-            /* Square aspect ratio - prevents cutting */
         }
 
         .prod-img img {
@@ -727,9 +805,7 @@
             z-index: 2;
         }
 
-        .prod-body {
-            padding: 8px 10px 12px;
-        }
+        .prod-body { padding: 8px 10px 12px; }
 
         .prod-shop {
             font-size: 9px;
@@ -786,7 +862,6 @@
         .add-btn:active:not(:disabled) { transform: scale(0.95); }
         .add-btn:disabled { background: #c4c8ce; cursor: not-allowed; opacity: 0.6; }
 
-        /* Desktop: 5 columns */
         @media (min-width: 1024px) {
             .product-grid {
                 grid-template-columns: repeat(5, 1fr);
@@ -798,7 +873,6 @@
             .add-btn { font-size: 11px; padding: 5px 12px; min-height: 30px; }
         }
 
-        /* Tablet: 3 columns */
         @media (min-width: 768px) and (max-width: 1023px) {
             .product-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -806,7 +880,6 @@
             }
         }
 
-        /* Small phone: 2 columns */
         @media (max-width: 480px) {
             .product-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -894,17 +967,18 @@
             border-radius: var(--radius-md);
         }
         .skel-shop { width: 150px; height: 160px; flex-shrink: 0; }
-        .skel-product { 
-            height: 0;
-            padding-bottom: 100%;
-            width: 100%;
-        }
+        .skel-sale { width: 160px; height: 190px; flex-shrink: 0; }
+        .skel-product { height: 0; padding-bottom: 100%; width: 100%; }
         @keyframes shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
         @media (min-width: 768px) {
             .skel-shop { width: 180px; height: 180px; }
+            .skel-sale { width: 180px; height: 210px; }
+        }
+        @media (min-width: 1024px) {
+            .skel-sale { width: 200px; height: 220px; }
         }
 
         /* ── TOAST ── */
@@ -1175,49 +1249,29 @@
             </div>
         </section>
 
-        <!-- SALES & OFFERS -->
+        <!-- SALES & OFFERS (Horizontal Scroll) -->
         <section class="fade-in">
             <div class="section-header">
                 <h2>🏷️ Sales &amp; Offers</h2>
                 <span class="see-all" onclick="navigateTo('shop-listing.html')">See All →</span>
             </div>
-            <div class="product-grid" id="salesProducts" role="list">
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
+            <div class="sales-scroll" id="salesProducts" role="list">
+                <div class="skel skel-sale"></div>
+                <div class="skel skel-sale"></div>
+                <div class="skel skel-sale"></div>
+                <div class="skel skel-sale"></div>
+                <div class="skel skel-sale"></div>
+                <div class="skel skel-sale"></div>
             </div>
         </section>
 
-        <!-- POPULAR PRODUCTS -->
+        <!-- MIXED PRODUCTS (All products shuffled) -->
         <section class="fade-in">
             <div class="section-header">
-                <h2>⭐ Popular Products</h2>
+                <h2>🛍️ All Products</h2>
                 <span class="see-all" onclick="navigateTo('shop-listing.html')">See All →</span>
             </div>
-            <div class="product-grid" id="popularProducts" role="list">
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-                <div class="skel skel-product"></div>
-            </div>
-        </section>
-
-        <!-- LATEST PRODUCTS -->
-        <section class="fade-in">
-            <div class="section-header">
-                <h2>🔥 Latest Products</h2>
-                <span class="see-all" onclick="navigateTo('shop-listing.html')">See All →</span>
-            </div>
-            <div class="product-grid" id="latestProducts" role="list">
+            <div class="product-grid" id="allProducts" role="list">
                 <div class="skel skel-product"></div>
                 <div class="skel skel-product"></div>
                 <div class="skel skel-product"></div>
@@ -1288,8 +1342,7 @@
 
         const $ = id => document.getElementById(id);
         const nearbyShopsEl = $('nearbyShops');
-        const popularEl = $('popularProducts');
-        const latestEl = $('latestProducts');
+        const allProductsEl = $('allProducts');
         const salesEl = $('salesProducts');
         const catScrollEl = $('catScroll');
         const locationPillEl = $('locationPill');
@@ -1492,18 +1545,28 @@
         function displaySearchResults(shops, products, q) {
             if (!shops.length && !products.length) {
                 nearbyShopsEl.innerHTML = `<div class="empty"><span class="e-icon">🔍</span><h3>No results</h3><p>Try a different search</p></div>`;
-                popularEl.innerHTML = latestEl.innerHTML = salesEl.innerHTML = '';
+                allProductsEl.innerHTML = salesEl.innerHTML = '';
                 return;
             }
             nearbyShopsEl.innerHTML = shops.length ?
                 shops.slice(0,6).map(s => shopCard(s, q)).join('') :
                 `<div class="empty"><span class="e-icon">🏪</span><h3>No shops</h3><p>${products.length?'Showing products':'Try a different term'}</p></div>`;
-            const prodHtml = products.length ?
-                products.slice(0,8).map(p => productCard(p, q)).join('') :
+            
+            const shuffled = shuffleArray([...products]);
+            const prodHtml = shuffled.length ?
+                shuffled.slice(0,8).map(p => productCard(p, q)).join('') :
                 `<div class="empty" style="grid-column:1/-1"><span class="e-icon">📦</span><h3>No products</h3></div>`;
-            popularEl.innerHTML = prodHtml;
-            latestEl.innerHTML = '';
+            allProductsEl.innerHTML = prodHtml;
             salesEl.innerHTML = '';
+        }
+
+        // ── SHUFFLE FUNCTION ──
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
         }
 
         window.clearSearch = function() {
@@ -1589,47 +1652,62 @@
             </div>`;
         }
 
-        // ── LOAD PRODUCTS ──
-        async function loadPopularProducts() {
-            try {
-                const snap = await getDocs(query(collection(db, 'products'), where('isActive', '==', true), limit(8)));
-                const prods = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.sold || 0) - (a.sold || 0));
-                popularEl.innerHTML = prods.length ?
-                    prods.slice(0,8).map(p => productCard(p)).join('') :
-                    `<div class="empty" style="grid-column:1/-1"><span class="e-icon">📦</span><h3>No products yet</h3></div>`;
-            } catch (err) {
-                popularEl.innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="e-icon">⚠️</span><h3>Failed to load</h3><p>${err.message}</p></div>`;
-            }
+        // ── SALE CARD (Horizontal Scroll) ──
+        function saleCard(p) {
+            const finalPrice = p.discountPrice || p.price || 0;
+            const discount = p.discountPercent || (p.discountPrice ? Math.round((1 - p.discountPrice / p.price) * 100) : 0);
+            return `
+            <div class="sale-card" onclick="window.location.href='product-detail.html?productId=${p.id}'">
+                <div class="sale-img">
+                    <img src="${p.imageURL||'https://picsum.photos/seed/'+encodeURIComponent(p.productName||p.id)+'/400/400'}"
+                         alt="${p.productName||'Product'}" loading="lazy" onerror="this.src='https://picsum.photos/400/400'">
+                    <span class="sale-badge">${discount>0?`-${discount}%`: 'SALE'}</span>
+                </div>
+                <div class="sale-body">
+                    <div class="s-name">${p.productName||'Product'}</div>
+                    <div>
+                        <span class="s-price">Rs. ${finalPrice.toLocaleString()}</span>
+                        ${p.discountPrice?`<span class="s-orig">Rs. ${(p.price||0).toLocaleString()}</span>`:''}
+                    </div>
+                    <button class="add-btn" onclick="event.stopPropagation();addToCart('${p.id}')"
+                            ${(p.stock||0)<=0?'disabled':''} style="margin-top:4px;font-size:8px;padding:2px 8px;min-height:22px;">
+                        + Add
+                    </button>
+                </div>
+            </div>`;
         }
 
-        async function loadLatestProducts() {
+        // ── LOAD PRODUCTS ──
+        async function loadAllProducts() {
             try {
-                const snap = await getDocs(query(collection(db, 'products'), where('isActive', '==', true), limit(8)));
-                const prods = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-                    .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                latestEl.innerHTML = prods.length ?
-                    prods.slice(0,8).map(p => productCard(p)).join('') :
-                    `<div class="empty" style="grid-column:1/-1"><span class="e-icon">📦</span><h3>No new products</h3></div>`;
+                const snap = await getDocs(query(collection(db, 'products'), where('isActive', '==', true), limit(12)));
+                const prods = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                // Shuffle for mixed display
+                const shuffled = shuffleArray([...prods]);
+                allProductsEl.innerHTML = shuffled.length ?
+                    shuffled.slice(0,12).map(p => productCard(p)).join('') :
+                    `<div class="empty" style="grid-column:1/-1"><span class="e-icon">📦</span><h3>No products yet</h3></div>`;
             } catch (err) {
-                latestEl.innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="e-icon">⚠️</span><h3>Failed to load</h3><p>${err.message}</p></div>`;
+                allProductsEl.innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="e-icon">⚠️</span><h3>Failed to load</h3><p>${err.message}</p></div>`;
             }
         }
 
         async function loadSalesProducts() {
             try {
-                const snap = await getDocs(query(collection(db, 'products'), where('isActive', '==', true), limit(8)));
+                const snap = await getDocs(query(collection(db, 'products'), where('isActive', '==', true), limit(12)));
                 let prods = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 let sales = prods.filter(p => p.onSale || p.discountPrice || p.discountPercent);
-                if (!sales.length) sales = prods.slice(0, 8);
+                if (!sales.length) sales = prods.slice(0, 6);
                 salesEl.innerHTML = sales.length ?
-                    sales.slice(0,8).map(p => productCard(p)).join('') :
-                    `<div class="empty" style="grid-column:1/-1"><span class="e-icon">🏷️</span><h3>No sales yet</h3></div>`;
+                    sales.slice(0,8).map(p => saleCard(p)).join('') :
+                    `<div class="empty" style="min-width:100%;"><span class="e-icon">🏷️</span><h3>No sales yet</h3></div>`;
             } catch (err) {
-                salesEl.innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="e-icon">⚠️</span><h3>Failed to load</h3><p>${err.message}</p></div>`;
+                salesEl.innerHTML = `<div class="empty" style="min-width:100%;"><span class="e-icon">⚠️</span><h3>Failed to load</h3><p>${err.message}</p></div>`;
             }
         }
 
-        function loadAll() { loadShops(); loadSalesProducts(); loadPopularProducts(); loadLatestProducts(); }
+        function loadAll() { loadShops(); loadAllProducts(); loadSalesProducts(); }
 
         // ── ADD TO CART ──
         window.addToCart = async function(productId) {
@@ -1732,7 +1810,7 @@
             navigateTo: window.navigateTo
         });
 
-        console.log('🦁 Simha — 2 cols phone | 5 cols desktop — Fixed image cutting');
+        console.log('🦁 Simha — Mixed products, sales slider, 2 cols phone | 5 cols desktop');
     </script>
 </body>
 </html>
